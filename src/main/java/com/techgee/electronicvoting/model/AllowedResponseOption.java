@@ -1,4 +1,4 @@
-package model;
+package com.techgee.electronicvoting.model;
 
 import javax.validation.constraints.NotNull;
 

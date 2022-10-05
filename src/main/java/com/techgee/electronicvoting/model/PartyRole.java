@@ -1,6 +1,6 @@
-package model;
+package com.techgee.electronicvoting.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,9 +15,13 @@ public class PartyRole {
 	private Long partyId;
 	private Long partyRoleCd;
 	private String partyRoleCdLocale;
-	private Date startDate;
-	private Date endDate;
+	private LocalDate startDate;
+	private LocalDate endDate;
 	
+	//All Cd values
+	public static final Long USER_ROLE_CD = 1L;
+	public static final Long ORGANISER_ROLE_CD = 2L;
+	public static final Long VOTER_ROLE_CD = 3L;
 	
 	//Getters and Setters
 	public Long getPartyRoleId() {
@@ -44,16 +48,16 @@ public class PartyRole {
 	public void setPartyRoleCdLocale(String partyRoleCdLocale) {
 		this.partyRoleCdLocale = partyRoleCdLocale;
 	}
-	public Date getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(Date startDate) {
+	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
-	public Date getEndDate() {
+	public LocalDate getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(Date endDate) {
+	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
 	

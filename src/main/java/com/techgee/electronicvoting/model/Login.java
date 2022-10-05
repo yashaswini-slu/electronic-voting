@@ -1,4 +1,4 @@
-package model;
+package com.techgee.electronicvoting.model;
 
 import java.sql.Date;
 
