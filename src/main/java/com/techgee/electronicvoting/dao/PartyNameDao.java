@@ -28,7 +28,7 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 	@Autowired
 	Environment environment;
 
-	private static final String PARTY_NAME_UID = "party_name_id";
+	private static final String PARTY_NAME_ID = "party_name_id";
 	public static final String BY_PARTYID = "PartyId";
 	
 	@Override
@@ -47,47 +47,46 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 		KeyHolder holder = new GeneratedKeyHolder();
 		try {
 			jdbcTemplate.update(con -> {
-				PreparedStatement ps = con.prepareStatement(environment.getProperty("PartyName.create"), new String[] { PARTY_NAME_UID });
+				PreparedStatement ps = con.prepareStatement(environment.getProperty("PartyName.create"), new String[] { PARTY_NAME_ID });
 				if(partyname.getPartyId() == null) {
 					ps.setObject(1, null);
 				} else { 
 					ps.setLong(1, partyname.getPartyId());
 				}
-				
 				if(partyname.getFirstName() == null) {
-					ps.setObject(4, null);
+					ps.setObject(2, null);
 				} else { 
-					ps.setString(4, partyname.getFirstName().strip());
+					ps.setString(2, partyname.getFirstName().strip());
 				}
 				if(partyname.getLastName() == null) {
-					ps.setObject(5, null);
+					ps.setObject(3, null);
 				} else { 
-					ps.setString(5, partyname.getLastName().strip());
+					ps.setString(3, partyname.getLastName().strip());
 				}
 				if(partyname.getMiddleName() == null) {
-					ps.setObject(6, null);
+					ps.setObject(4, null);
 				} else { 
-					ps.setString(6, partyname.getMiddleName().strip());
+					ps.setString(4, partyname.getMiddleName().strip());
 				}
 				if(partyname.getRestOfName() == null) {
-					ps.setObject(7, null);
+					ps.setObject(5, null);
 				} else { 
-					ps.setString(7, partyname.getRestOfName().strip());
+					ps.setString(5, partyname.getRestOfName().strip());
 				}
 				if(partyname.getIsPreferred() == null) {
-					ps.setObject(8, null);
+					ps.setObject(6, null);
 				} else { 
-					ps.setBoolean(8, partyname.getIsPreferred());
+					ps.setBoolean(6, partyname.getIsPreferred());
 				}
 				if(partyname.getStartDate() == null) {
-					ps.setObject(9, null);
+					ps.setObject(7, null);
 				} else { 
-					ps.setObject(9, partyname.getStartDate());
+					ps.setObject(7, partyname.getStartDate());
 				}
 				if(partyname.getEndDate() == null) {
-					ps.setObject(10, null);
+					ps.setObject(8, null);
 				} else { 
-					ps.setObject(10, partyname.getEndDate());
+					ps.setObject(8, partyname.getEndDate());
 				}
 				return ps;
 			}, holder);
@@ -198,7 +197,7 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 
 		partyname.setPartyId(rs.getObject("party_uid") != null ? rs.getLong("party_id_party") : null);
 
-		partyname.setPartyNameId(rs.getObject(PARTY_NAME_UID) != null ? rs.getLong(PARTY_NAME_UID) : null);
+		partyname.setPartyNameId(rs.getObject(PARTY_NAME_ID) != null ? rs.getLong(PARTY_NAME_ID) : null);
 
 		partyname.setFirstName(rs.getObject("first_name") != null ? rs.getString("first_name") : null);
 

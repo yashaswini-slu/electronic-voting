@@ -123,7 +123,6 @@ public class PartyDao implements GenericDao<Party, Parameters, String> {
 		Party party = new Party();
 		party.setPartyId(rs.getObject(pk) != null ? rs.getLong(pk) : null);
 		party.setPartyCd(rs.getObject("party_cd_party_cd") != null ? rs.getLong("party_cd_party_cd") : null);
-//		party.setPartyCdLocale(rs.getObject("party_cd_locale") != null ? rs.getString("party_cd_locale") : null);
 
 		return party;
 	};
