@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
@@ -19,6 +20,9 @@ public class SignUpSignInResource {
 	@NotNull
 	private String password;
 	private String confirmPassword;
+	@NotNull
+	@Default
+	private boolean isIndividual = true;
 	/**
 	 * @return the firstName
 	 */
@@ -91,11 +95,19 @@ public class SignUpSignInResource {
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
 	}
+	public boolean isIndividual() {
+		return isIndividual;
+	}
+	public void setIndividual(boolean isIndividual) {
+		this.isIndividual = isIndividual;
+	}
 	@Override
 	public String toString() {
 		return "SignUpSignInResource [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", password=" + password + ", confirmPassword=" + confirmPassword + "]";
+				+ ", userName=" + userName + ", password=" + password + ", confirmPassword=" + confirmPassword
+				+ ", isIndividual=" + isIndividual + "]";
 	}
+	
 	
 	
 	
