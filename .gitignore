@@ -1,13 +1,13 @@
-/target/
-*/target/**
-**/META-INF/
-!.mvn/wrapper/maven-wrapper.jar
-
-### STS ###
+*.classpath
+*.class
+*.prefs
+*.jar
+*.lst
+*.project
+*.factorypath
+*.original
+target/
+.settings/
 .apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
 .sts4-cache
+.springBeans
