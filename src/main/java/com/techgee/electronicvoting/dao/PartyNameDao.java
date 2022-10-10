@@ -93,7 +93,7 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 		} catch (Exception e) {
 			
 		}
-		return holder.getKey().longValue();
+		return null;
 	
 	}
 
