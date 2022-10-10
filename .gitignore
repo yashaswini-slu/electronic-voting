@@ -11,3 +11,4 @@ target/
 .apt_generated
 .sts4-cache
 .springBeans
+bin/
