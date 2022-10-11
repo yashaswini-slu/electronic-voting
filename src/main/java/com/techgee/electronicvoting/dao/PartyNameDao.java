@@ -83,15 +83,11 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 				} else { 
 					ps.setObject(7, partyname.getStartDate());
 				}
-				if(partyname.getEndDate() == null) {
-					ps.setObject(8, null);
-				} else { 
-					ps.setObject(8, partyname.getEndDate());
-				}
 				return ps;
 			}, holder);
 		} catch (Exception e) {
-			
+			System.out.println(e);
+			e.printStackTrace();
 		}
 		return null;
 	
@@ -195,7 +191,7 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 
 		PartyName partyname = new PartyName();
 
-		partyname.setPartyId(rs.getObject("party_uid") != null ? rs.getLong("party_id_party") : null);
+		partyname.setPartyId(rs.getObject("party_id_party") != null ? rs.getLong("party_id_party") : null);
 
 		partyname.setPartyNameId(rs.getObject(PARTY_NAME_ID) != null ? rs.getLong(PARTY_NAME_ID) : null);
 

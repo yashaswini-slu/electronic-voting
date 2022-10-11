@@ -98,6 +98,7 @@ public class SignUpSignInService {
 		partyName.setFirstName(signUpSignInResource.getFirstName());
 		partyName.setLastName(signUpSignInResource.getLastName());
 		partyName.setStartDate(LocalDate.now());
+		partyName.setIsPreferred(true);
 		partyNameDao.create(partyName, parameters);
 	}
 
