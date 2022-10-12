@@ -15,6 +15,7 @@ public class SignUpSignInResource {
 	private String firstName;
 	private String lastName;
 	private String middleName;
+	private String restOfName;
 	@NotNull
 	private String userName; //Email address
 	@NotNull
@@ -101,11 +102,18 @@ public class SignUpSignInResource {
 	public void setIndividual(boolean isIndividual) {
 		this.isIndividual = isIndividual;
 	}
+	
+	public String getRestOfName() {
+		return restOfName;
+	}
+	public void setRestOfName(String restOfName) {
+		this.restOfName = restOfName;
+	}
 	@Override
 	public String toString() {
 		return "SignUpSignInResource [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
-				+ ", userName=" + userName + ", password=" + password + ", confirmPassword=" + confirmPassword
-				+ ", isIndividual=" + isIndividual + "]";
+				+ ", restOfName=" + restOfName + ", userName=" + userName + ", password=" + password
+				+ ", confirmPassword=" + confirmPassword + ", isIndividual=" + isIndividual + "]";
 	}
 	
 	

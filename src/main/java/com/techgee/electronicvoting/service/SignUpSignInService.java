@@ -40,14 +40,35 @@ public class SignUpSignInService {
 	PasswordDao passwordDao;
 	
 	@Transactional
-	public boolean signUp(SignUpSignInResource signUpSignInResource) {
-		//TODO check password, check required data based on type 
+	public String signUp(SignUpSignInResource signUpSignInResource) {
+		//TODO check password, check required data based on
+		String validate = validateResource(signUpSignInResource);
+		if(!validate.equals("No error")) {
+			return validate;
+		}
 		Party party = createParty(); 
 		createPartyName(signUpSignInResource, new Parameters(party.getPartyId()));
 		createPartyRole(new Parameters(party.getPartyId()));
 		Login login = createLogin(signUpSignInResource, new Parameters(party.getPartyId()));
 		createPassword(signUpSignInResource, new Parameters(login.getLoginId()));
-		return true;
+		return "Sign up Sucess";
+	}
+
+	private String validateResource(SignUpSignInResource signUpSignInResource) {
+		if(!signUpSignInResource.getPassword().equals(signUpSignInResource.getConfirmPassword())) {
+			return "Password does not Match";
+		}
+		if(signUpSignInResource.isIndividual()) {
+			if(signUpSignInResource.getFirstName() == null || signUpSignInResource.getLastName() == null) {
+				return "First Name and Last Name is required for Individual"; 
+			}
+		} else {
+			if(signUpSignInResource.getRestOfName() == null) {
+				return "Organization name is required";
+			}
+		}
+		return "No error";
+		
 	}
 
 	@Parameter
