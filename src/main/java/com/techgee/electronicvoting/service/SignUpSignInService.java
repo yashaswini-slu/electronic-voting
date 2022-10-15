@@ -3,6 +3,7 @@ package com.techgee.electronicvoting.service;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,10 @@ import com.techgee.electronicvoting.dao.PartyDao;
 import com.techgee.electronicvoting.dao.PartyNameDao;
 import com.techgee.electronicvoting.dao.PartyRoleDao;
 import com.techgee.electronicvoting.dao.PasswordDao;
+import com.techgee.electronicvoting.exception.ErrorDefinition;
+import com.techgee.electronicvoting.exception.ErrorLevel;
+import com.techgee.electronicvoting.exception.ErrorSeverity;
+import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.Login;
 import com.techgee.electronicvoting.model.Party;
 import com.techgee.electronicvoting.model.PartyName;
@@ -40,35 +45,35 @@ public class SignUpSignInService {
 	PasswordDao passwordDao;
 	
 	@Transactional
-	public String signUp(SignUpSignInResource signUpSignInResource) {
+	public boolean signUp(SignUpSignInResource signUpSignInResource) {
 		//TODO check password, check required data based on
-		String validate = validateResource(signUpSignInResource);
-		if(!validate.equals("No error")) {
-			return validate;
-		}
+		validateResource(signUpSignInResource);
 		Party party = createParty(); 
 		createPartyName(signUpSignInResource, new Parameters(party.getPartyId()));
 		createPartyRole(new Parameters(party.getPartyId()));
 		Login login = createLogin(signUpSignInResource, new Parameters(party.getPartyId()));
 		createPassword(signUpSignInResource, new Parameters(login.getLoginId()));
-		return "Sign up Sucess";
+		return true;
 	}
 
-	private String validateResource(SignUpSignInResource signUpSignInResource) {
+	private void validateResource(SignUpSignInResource signUpSignInResource) {
 		if(!signUpSignInResource.getPassword().equals(signUpSignInResource.getConfirmPassword())) {
-			return "Password does not Match";
+			throw new VotingException(new ErrorDefinition("RESOURCE_FAILED_VALIDATION",
+					412, ErrorLevel.RESOURCE, ErrorSeverity.FATAL, "Resource failed validation", HttpStatus.PRECONDITION_FAILED, null),"Password does not Match");
 		}
 		if(signUpSignInResource.isIndividual()) {
 			if(signUpSignInResource.getFirstName() == null || signUpSignInResource.getLastName() == null) {
-				return "First Name and Last Name is required for Individual"; 
+				throw new VotingException(new ErrorDefinition("RESOURCE_FAILED_VALIDATION",
+						412, ErrorLevel.RESOURCE, ErrorSeverity.FATAL, "Resource failed validation", HttpStatus.PRECONDITION_FAILED, null),
+						"First Name and Last Name is required for Individual");
 			}
 		} else {
 			if(signUpSignInResource.getRestOfName() == null) {
-				return "Organization name is required";
+				throw new VotingException(new ErrorDefinition("RESOURCE_FAILED_VALIDATION",
+						412, ErrorLevel.RESOURCE, ErrorSeverity.FATAL, "Resource failed validation", HttpStatus.PRECONDITION_FAILED, null),
+						"Organization name is required");
 			}
 		}
-		return "No error";
-		
 	}
 
 	@Parameter

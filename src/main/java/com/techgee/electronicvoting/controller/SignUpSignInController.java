@@ -20,7 +20,7 @@ public class SignUpSignInController {
 	SignUpSignInService signUpSignInService;
 	
 	@PostMapping(value = "/signUp")
-    public String signUp(@Valid @RequestBody SignUpSignInResource signUpSignInResource) {
+    public boolean signUp(@Valid @RequestBody SignUpSignInResource signUpSignInResource) {
         return signUpSignInService.signUp(signUpSignInResource);
     }
 
