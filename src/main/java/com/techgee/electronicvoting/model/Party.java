@@ -1,4 +1,4 @@
-package model;
+package com.techgee.electronicvoting.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ public class Party {
 	
 	
 	private Long partyId;
-	private Long partyCdDd;
+	private Long partyCd;
 	private String partyCdLocale;
 	
 	//Getters and Setters
@@ -21,11 +21,11 @@ public class Party {
 	public void setPartyId(Long partyId) {
 		this.partyId = partyId;
 	}
-	public Long getPartyCdDd() {
-		return partyCdDd;
+	public Long getPartyCd() {
+		return partyCd;
 	}
-	public void setPartyCdDd(Long partyCdDd) {
-		this.partyCdDd = partyCdDd;
+	public void setPartyCd(Long partyCd) {
+		this.partyCd = partyCd;
 	}
 	public String getPartyCdLocale() {
 		return partyCdLocale;
@@ -38,7 +38,7 @@ public class Party {
 	//ToString
 	@Override
 	public String toString() {
-		return "Party [partyId=" + partyId + ", partyCdDd=" + partyCdDd + ", partyCdLocale=" + partyCdLocale + "]";
+		return "Party [partyId=" + partyId + ", partyCdDd=" + partyCd + ", partyCdLocale=" + partyCdLocale + "]";
 	}
 	
 	

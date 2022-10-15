@@ -1,4 +1,4 @@
-package model;
+package com.techgee.electronicvoting.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -384,7 +384,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 -- object: public.party_name | type: TABLE --
 -- DROP TABLE IF EXISTS public.party_name CASCADE;
 CREATE TABLE public.party_name (
-	party_name_id bigint NOT NULL,
+	party_name_id bigserial NOT NULL,
 	first_name varchar(250) NOT NULL,
 	last_name varchar(250) NOT NULL,
 	start_date date NOT NULL,
@@ -410,7 +410,7 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 -- object: public.login_history | type: TABLE --
 -- DROP TABLE IF EXISTS public.login_history CASCADE;
 CREATE TABLE public.login_history (
-	login_history_id bigint NOT NULL,
+	login_history_id bigserial NOT NULL,
 	start_date timestamp NOT NULL,
 	end_date timestamp,
 	login_id_login bigint,
