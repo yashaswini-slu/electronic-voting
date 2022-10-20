@@ -2,13 +2,11 @@ package com.techgee.electronicvoting.shared;
 
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 @ToString
 public class Parameters {

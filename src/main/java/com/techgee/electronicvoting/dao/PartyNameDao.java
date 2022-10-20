@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.PartyName;
 import com.techgee.electronicvoting.shared.Parameters;
 
@@ -33,19 +34,12 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 	
 	@Override
 	public Optional<PartyName> createV1(@NotNull PartyName partyname, Parameters parameters) {
-		try {
 			return getV1(new Parameters(insert(partyname, parameters)));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	@Override
 	public Long insert(PartyName partyname, Parameters parameters) {
 		KeyHolder holder = new GeneratedKeyHolder();
-		try {
 			jdbcTemplate.update(con -> {
 				PreparedStatement ps = con.prepareStatement(environment.getProperty("PartyName.create"), new String[] { PARTY_NAME_ID });
 				if(partyname.getPartyId() == null) {
@@ -85,68 +79,63 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 				}
 				return ps;
 			}, holder);
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-		}
-		return null;
-	
+			return holder.getKey().longValue();
 	}
 
 	@Override
-	public Optional<PartyName> getV1(Parameters parameters) throws Exception {
+	public Optional<PartyName> getV1(Parameters parameters) {
 		try {
 			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyName.get"), partynameRowMapper,
 				parameters.getId()));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new Exception("Patry Name get method return more than one result. Contact developer");
+			throw new VotingException("Patry Name get method return more than one result. Contact developer");
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
 	@Override
-	public Optional<PartyName> getV1(Parameters parameters, String whereClause) throws Exception {
+	public Optional<PartyName> getV1(Parameters parameters, String whereClause) {
 		Object parameter [] = switch(whereClause) {
 		case BY_PARTYID -> new Object [] {
 				parameters.getId() //Party ID
 		};
-		default -> throw new Exception("The requested method is not implemented");
+		default -> throw new VotingException("The requested method is not implemented");
 		};
 		try {
 				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyName.getBy" + whereClause), partynameRowMapper, parameter));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new Exception("Patry Name get "+ parameters.getId()  +" where method return more than one result."
+			throw new VotingException("Patry Name get "+ parameters.getId()  +" where method return more than one result."
 					+ " Contact developer");
 		} catch (Exception e) {
-			throw new Exception( e.getMessage());
+			throw new VotingException( e.getMessage());
 		}
 	}
 
 	@Override
-	public List<PartyName> list(Parameters parameters) throws Exception {
+	public List<PartyName> list(Parameters parameters) {
 		try {
 			return jdbcTemplate.query(environment.getProperty("PartyName.list"), partynameRowMapper, 
 					parameters.getId());
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
 	@Override
-	public List<PartyName> list(Parameters parameters, String whereClause) throws Exception {
+	public List<PartyName> list(Parameters parameters, String whereClause) {
 		try {
 			if (whereClause.equalsIgnoreCase(BY_PARTYID)) {
 				return jdbcTemplate.query(environment.getProperty("PartyName.listBy" + whereClause), partynameRowMapper, 
 						parameters.getId());
 			}
-			throw new Exception( "whereClause method not implemented for partyName");
+			throw new VotingException( "whereClause method not implemented for partyName");
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
@@ -176,13 +165,13 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 	}
 
 	@Override
-	public int delete(Parameters parameters, String whereClause) throws Exception {
+	public int delete(Parameters parameters, String whereClause) {
 		try {
 			if(whereClause.equalsIgnoreCase(BY_PARTYID)) {
 				return jdbcTemplate.update(environment.getProperty("PartyName.deleteBy" + whereClause), parameters.getId());
 			}
 		} catch(Exception e) { 
-			throw new Exception("The requested delete method is not implemented");
+			throw new VotingException("The requested delete method is not implemented");
 		}
 		return 0;
 	}

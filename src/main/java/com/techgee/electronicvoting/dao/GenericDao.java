@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.techgee.electronicvoting.exception.VotingException;
+
 public interface GenericDao <T, P, S>{
 	
 	 /** The new instance of model object into database */
@@ -26,7 +28,7 @@ public interface GenericDao <T, P, S>{
      * the indicated parameter and where clause else insert new row and retrieve
 	 * @throws Exception 
      */
-	default T upsert(T model, P parameters) throws Exception {
+	default T upsert(T model, P parameters) {
 		return getV1(parameters).orElseGet(()->create(model, parameters));
 	}
 	
@@ -34,7 +36,7 @@ public interface GenericDao <T, P, S>{
      *  the indicated parameters 
 	 * @throws Exception 
      */
-	default T get(@NotNull P parameters) throws Exception {
+	default T get(@NotNull P parameters)  {
     	return getV1(Objects.requireNonNull(parameters, "Parameters in the get method should not be null")).orElse(null);
     }
 
@@ -42,9 +44,9 @@ public interface GenericDao <T, P, S>{
      *  the indicated parameter
 	 * @throws Exception 
      */
-	Optional<T> getV1(P parameters) throws Exception;
+	Optional<T> getV1(P parameters);
 	
-	default T get(P parameters, S whereClause) throws Exception {
+	default T get(P parameters, S whereClause) {
     	return getV1(parameters, whereClause).orElse(null);
     }
     
@@ -52,19 +54,19 @@ public interface GenericDao <T, P, S>{
      *  the indicated parameters  and whereClause
      * @throws Exception 
      */
-    Optional<T> getV1(P parameters, S whereClause) throws Exception;
+    Optional<T> getV1(P parameters, S whereClause);
    
     /**
      * Retrieve all instance using parameters
      * @throws Exception 
      */
-    List<T> list(P parameters) throws Exception;
+    List<T> list(P parameters);
     
     /**
      * Retrieve all instance using the indicated parameters and where clause
      * @throws Exception 
      */
-    List<T> list(P parameters, S whereClause) throws Exception;
+    List<T> list(P parameters, S whereClause);
     
      
     /** Save changes made to a persistent object. */
@@ -80,16 +82,16 @@ public interface GenericDao <T, P, S>{
 
     /** Remove an object from persistent storage in the database 
      * @throws Exception */
-    default int deleteV1(Optional<T> persistentObject) throws Exception {
-    	return delete(persistentObject.orElseThrow(()->new Exception("The requested object is not found in database")));
+    default int deleteV1(Optional<T> persistentObject) {
+    	return delete(persistentObject.orElseThrow(()->new VotingException("The requested object is not found in database")));
     }
     
     /** Remove all objects from persistent storage in the database
      * using parameters and where clause (mostly Foreign key)
      * @throws Exception */
-    int delete(P parameters, S whereClause) throws Exception;
+    int delete(P parameters, S whereClause);
     
-    default int findAndDelete(P parameters) throws Exception {
+    default int findAndDelete(P parameters) {
     	return deleteV1(getV1(parameters));
     }
 	

@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.PartyRole;
 import com.techgee.electronicvoting.shared.Parameters;
 
@@ -38,19 +39,12 @@ public class PartyRoleDao implements GenericDao<PartyRole, Parameters, String>{
 	
 	@Override
 	public Optional<PartyRole> createV1(@NotNull PartyRole partyrole, Parameters parameters) {	
-		try {
 			return getV1(new Parameters(insert(partyrole, parameters)));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	@Override
 	public Long insert(PartyRole partyrole, Parameters parameters) {
 		KeyHolder holder = new GeneratedKeyHolder();
-		try {
 			jdbcTemplate.update(con -> {
 				PreparedStatement ps = con.prepareStatement(environment.getProperty("PartyRole.create"), new String[] { pk });
 				if(partyrole.getPartyId() == null) {
@@ -75,42 +69,39 @@ public class PartyRoleDao implements GenericDao<PartyRole, Parameters, String>{
 				}
 				return ps;
 			}, holder);
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
 		return holder.getKey().longValue();
 	}
 	@Override
-	public Optional<PartyRole> getV1(Parameters parameters) throws Exception {
+	public Optional<PartyRole> getV1(Parameters parameters) {
 		try {
 			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyRole.get"), partyRoleRowMapper,
 				parameters.getId()));  //Party RoleUID
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new Exception("PartyRole get method return more than one result. Contact developer");
+			throw new VotingException("PartyRole get method return more than one result. Contact developer");
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
 	@Override
-	public Optional<PartyRole> getV1(Parameters parameters, String whereClause) throws Exception {
+	public Optional<PartyRole> getV1(Parameters parameters, String whereClause) {
 		try {
 			if (whereClause.equalsIgnoreCase(BY_PARTYID_AND_PARTYROLECD)) {
 				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyRole.getBy" + whereClause), partyRoleRowMapper, 
 					parameters.getId(), //Party_UID
-					parameters.getParentParameters().getId()));//Party Role Cd 
+					parameters.getForeignKey()));//Party Role Cd 
 			}
 			if (whereClause.equalsIgnoreCase(BY_PARTYROLEID_AND_PARTYROLECD)) {
 				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyRole.getBy" + whereClause), partyRoleRowMapper,
 						parameters.getId(), //PartyRoleUID
-						parameters.getParentParameters().getId())); //Party Role Cd 
+						parameters.getForeignKey())); //Party Role Cd 
 			}
 			if (whereClause.equalsIgnoreCase(BY_PARTYROLEID_AND_PARTYROLECD_END_DATE)) {
 				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyRole.getBy" + whereClause), partyRoleRowMapper, 
 						parameters.getId(), //PartyRoleUID
-						parameters.getParentParameters().getId())); //Party Role Cd 
+						parameters.getForeignKey())); //Party Role Cd 
 			}
 			if (whereClause.equalsIgnoreCase(BY_PARTYROLECD)) { // Applicable to only ROLE_SERVICE PROVIDER & IBBI 
 				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyRole.getBy" + whereClause), partyRoleRowMapper, 
@@ -120,28 +111,28 @@ public class PartyRoleDao implements GenericDao<PartyRole, Parameters, String>{
 				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyRole.getBy" + whereClause), partyRoleRowMapper, 
 						parameters.getId())); //Party Uid
 			}
-			throw new Exception("Party Role DAO where clause method is not implemented");
+			throw new VotingException("Party Role DAO where clause method is not implemented");
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new Exception("PartyRole get where method return more than one result. Contact developer");
+			throw new VotingException("PartyRole get where method return more than one result. Contact developer");
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
 	@Override
-	public List<PartyRole> list(Parameters parameters) throws Exception {
+	public List<PartyRole> list(Parameters parameters) {
 		try {
 			return jdbcTemplate.query(environment.getProperty("PartyRole.list"), partyRoleRowMapper, 
 				parameters.getId());
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
 	@Override
-	public List<PartyRole> list(Parameters parameters, String whereClause) throws Exception {
+	public List<PartyRole> list(Parameters parameters, String whereClause) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -158,11 +149,11 @@ public class PartyRoleDao implements GenericDao<PartyRole, Parameters, String>{
 	}
 
 	@Override
-	public int delete(Parameters parameters, String whereClause) throws Exception {
+	public int delete(Parameters parameters, String whereClause) {
 		if(whereClause.equalsIgnoreCase(BY_PARTYID)) {
 			return jdbcTemplate.update(environment.getProperty("PartyRole.deleteBy" + whereClause), parameters.getId());
 		}
-		throw new Exception("The requested delete method is not implemented");
+		throw new VotingException("The requested delete method is not implemented");
 	
 	}
 	

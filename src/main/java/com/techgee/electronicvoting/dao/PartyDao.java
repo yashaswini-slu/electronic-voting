@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.Party;
 import com.techgee.electronicvoting.shared.Parameters;
 
@@ -34,13 +35,7 @@ public class PartyDao implements GenericDao<Party, Parameters, String> {
 
 	@Override
 	public Optional<Party> createV1(@NotNull Party party, Parameters parameters) {
-		try {
-			return getV1(new Parameters(insert(party, parameters)));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return getV1(new Parameters(insert(party, parameters)));
 	}
 
 	@Override
@@ -66,16 +61,16 @@ public class PartyDao implements GenericDao<Party, Parameters, String> {
 	}
 
 	@Override
-	public Optional<Party> getV1(Parameters parameters) throws Exception {
+	public Optional<Party> getV1(Parameters parameters) {
 		try {
 			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("Party.get"), partyRowMapper,
 					parameters.getId())); //Party UID
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new Exception("Patry get method return more than one result. Contact developer");
+			throw new VotingException("Patry get method return more than one result. Contact developer");
 		}  catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
@@ -86,12 +81,12 @@ public class PartyDao implements GenericDao<Party, Parameters, String> {
 	}
 
 	@Override
-	public List<Party> list(Parameters parameters) throws Exception {
+	public List<Party> list(Parameters parameters) {
 		try {
 			return jdbcTemplate.query(environment.getProperty("Party.list"), partyRowMapper, 
 					parameters.getId());
 		}  catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
