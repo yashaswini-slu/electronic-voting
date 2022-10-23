@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.Login;
 import com.techgee.electronicvoting.shared.Parameters;
 
@@ -27,23 +28,17 @@ public class LoginDao implements GenericDao<Login, Parameters, String> {
 	
 	@Autowired
 	Environment environment;
+	
+	public static final String BY_USER_ID = "UserId";
 
 	@Override
 	public Optional<Login> createV1(@NotNull Login login, Parameters parameters) {
-		try {
 			return getV1(new Parameters(insert(login, parameters)));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		return null;
-
-	}
 
 	@Override
 	public Long insert(Login login, Parameters parameters) {
 		KeyHolder holder = new GeneratedKeyHolder();
-		try {
 			jdbcTemplate.update(con -> {
 				PreparedStatement ps = con.prepareStatement(environment.getProperty("Login.create"), new String[] { "login_id" });
 				if(login.getPartyId() == null) {
@@ -68,40 +63,51 @@ public class LoginDao implements GenericDao<Login, Parameters, String> {
 				}
 				return ps;
 			}, holder);
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
 		return holder.getKey().longValue();	
 	}
 
 	@Override
-	public Optional<Login> getV1(Parameters parameters) throws Exception {
+	public Optional<Login> getV1(Parameters parameters)  {
 		try {
 			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("Login.get"), loginRowMapper,
 				parameters.getId()));  //LoginId
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new Exception("PartyRole get method return more than one result. Contact developer");
+			throw new VotingException("PartyRole get method return more than one result. Contact developer");
 		} catch (Exception e) {
-			throw new Exception(e.getMessage());
+			throw new VotingException(e.getMessage());
 		}
 	}
 
 	@Override
-	public Optional<Login> getV1(Parameters parameters, String whereClause) throws Exception {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+	public Optional<Login> getV1(Parameters parameters, String whereClause)  {
+		Object parameter [] = switch(whereClause) {
+		case BY_USER_ID -> new Object [] {
+				parameters.getWord() //User Id
+		};
+		default -> throw new VotingException("The requested method is not implemented");
+		};
+		try {
+				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("Login.getBy" + whereClause), loginRowMapper, parameter));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		} catch (IncorrectResultSizeDataAccessException e) {
+			throw new VotingException("Login get "+ parameters.getId()  +" where method return more than one result."
+					+ " Contact developer");
+		} catch (Exception e) {
+			throw new VotingException( e.getMessage());
+		}
 	}
 
 	@Override
-	public List<Login> list(Parameters parameters) throws Exception {
+	public List<Login> list(Parameters parameters)  {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Login> list(Parameters parameters, String whereClause) throws Exception {
+	public List<Login> list(Parameters parameters, String whereClause)  {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -119,7 +125,7 @@ public class LoginDao implements GenericDao<Login, Parameters, String> {
 	}
 
 	@Override
-	public int delete(Parameters parameters, String whereClause) throws Exception {
+	public int delete(Parameters parameters, String whereClause)  {
 		// TODO Auto-generated method stub
 		return 0;
 	}
