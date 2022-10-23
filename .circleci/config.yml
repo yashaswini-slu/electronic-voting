@@ -1,0 +1,13 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    steps:
+      - checkout
+
+      - run:
+         name: Installing dependencies and compiling the source code
+         command: ./mvn clean install
+
