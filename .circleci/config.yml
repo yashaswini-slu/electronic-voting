@@ -18,5 +18,3 @@ jobs:
       - store_artifacts:
          path: /home/circleci/project/target/electronic-voting-0.0.1-SNAPSHOT.jar
          destination: electronic-voting-0.0.1-SNAPSHOT.jar
-
-
