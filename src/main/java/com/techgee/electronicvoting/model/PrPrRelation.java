@@ -1,6 +1,6 @@
 package com.techgee.electronicvoting.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +15,13 @@ public class PrPrRelation {
 	private Long partyRoleId1; //Left partyRole
 	private Long partyRoleId2; //Right partyRole
 	private Long prPrRelationCd;
-	private Date startDate;
-	private Date endDate;
+	private LocalDate startDate;
+	private LocalDate endDate;
+	
+	//All Cd values
+	public static final Long USER_ORGANISE = 1L;
+	public static final Long USER_VOTER = 2L;
+	public static final Long SERVICE_PROVIDER_USER = 3L;
 	
 	//Getters and Setters
 	public Long getPrPrRelationId() {
@@ -43,16 +48,16 @@ public class PrPrRelation {
 	public void setPrPrRelationCd(Long prPrRelationCd) {
 		this.prPrRelationCd = prPrRelationCd;
 	}
-	public Date getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(Date startDate) {
+	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
-	public Date getEndDate() {
+	public LocalDate getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(Date endDate) {
+	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
 	
