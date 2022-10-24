@@ -11,8 +11,12 @@ jobs:
          name: Installing dependencies and compiling the source code
          command: mvn clean install
 
+      - run:
+         name: path
+         command: pwd
+
       - store_artifacts:
-         path: /target/electronic-voting-0.0.1-SNAPSHOT.jar
+         path: /home/circleci/project/target/electronic-voting-0.0.1-SNAPSHOT.jar
          destination: electronic-voting-0.0.1-SNAPSHOT.jar
 
 
