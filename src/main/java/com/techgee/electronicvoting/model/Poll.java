@@ -1,6 +1,6 @@
 package com.techgee.electronicvoting.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
 
@@ -19,9 +19,10 @@ public class Poll {
 	@NotNull
 	private String description;
 	@NotNull
-	private Date startDate;
+	private LocalDate startDate;
 	@NotNull
-	private Date endDate;
+	private LocalDate endDate;
+	private Long pprId;
 	
 	//Getters and Setters
 	public Long getPollId() {
@@ -42,26 +43,29 @@ public class Poll {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Date getStartDate() {
+	public LocalDate getStartDate() {
 		return startDate;
 	}
-	public void setStartDate(Date startDate) {
+	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
-	public Date getEndDate() {
+	public LocalDate getEndDate() {
 		return endDate;
 	}
-	public void setEndDate(Date endDate) {
+	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
-	
-	//ToString
+	public Long getPprId() {
+		return pprId;
+	}
+	public void setPprId(Long pprId) {
+		this.pprId = pprId;
+	}
 	@Override
 	public String toString() {
 		return "Poll [pollId=" + pollId + ", title=" + title + ", description=" + description + ", startDate="
-				+ startDate + ", endDate=" + endDate + "]";
+				+ startDate + ", endDate=" + endDate + ", pprId=" + pprId + "]";
 	}
-	
 	
 	
 }
