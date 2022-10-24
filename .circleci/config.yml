@@ -16,10 +16,6 @@ jobs:
          name: run maven test cases
          command: mvn test
 
-      - store_artifacts:
-         path: /home/circleci/project/target/electronic-voting-0.0.1-SNAPSHOT.jar
-         destination: electronic-voting-0.0.1-SNAPSHOT.jar
-
       - run:
          name: Build docker image
          command: docker build -t electronic-voting-api .
