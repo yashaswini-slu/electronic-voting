@@ -2,6 +2,7 @@ package com.techgee.electronicvoting;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 
@@ -51,10 +52,11 @@ public class PollCreateTests {
 	public void pollCreateTest() {
 		PollResource pollResource = setPollResource();
 		try {
-			this.mockMvc.perform(post("/voting/poll/create/1")
+			this.mockMvc.perform(post("/poll/create/1")
 					.content(asJsonString(pollResource))
 					.contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_JSON)).andDo(print());
+					.accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().is2xxSuccessful()).andDo(print());
 		} catch (Exception e) {
 			  e.printStackTrace();
 		}
@@ -63,8 +65,8 @@ public class PollCreateTests {
 
 	private PollResource setPollResource() {
 		PollResource pollResource = new PollResource();
-		pollResource.setDescription("Test Description");
-		pollResource.setTitle("Test Title");
+		pollResource.setDescription("Test Description 1");
+		pollResource.setTitle("Test Title 1");
 		pollResource.setStartDate(LocalDate.now().plusMonths(1).plusDays(3));
 		pollResource.setEndDate(LocalDate.now().plusMonths(3));
 		return pollResource;
