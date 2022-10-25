@@ -81,7 +81,7 @@ public class LoginHistoryDao implements GenericDao<LoginHistory, Parameters, Str
 		default -> throw new VotingException("The requested method is not implemented");
 		};
 		try {
-				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("Login.getBy" + whereClause), loginHistoryRowMapper, parameter));
+				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("LoginHistory.getBy" + whereClause), loginHistoryRowMapper, parameter));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
@@ -131,13 +131,23 @@ RowMapper<LoginHistory> loginHistoryRowMapper = (rs, rowNum) -> {
 		
 		LoginHistory loginHistory = new LoginHistory();
 			
-		loginHistory.setLoginId(rs.getObject("login_id") != null ? rs.getLong("login_id") : null);
+		loginHistory.setLoginHistoryId(rs.getObject("login_history_id") != null ? rs.getLong("login_history_id") : null);
+		
+		loginHistory.setLoginId(rs.getObject("login_id_login") != null ? rs.getLong("login_id_login") : null);
 			
-		loginHistory.setStartDate(rs.getObject("start_date") != null ? LocalDateTime.ofInstant(rs.getDate("start_date").toInstant(), ZoneId.systemDefault()): null);
+		loginHistory.setStartDate(rs.getObject("start_date") != null ? toDateTime(rs.getObject("start_date")): null);
 
-		loginHistory.setEndDate(rs.getObject("end_date") != null ? LocalDateTime.ofInstant(rs.getDate("end_date").toInstant(), ZoneId.systemDefault()) : null);
+		loginHistory.setEndDate(rs.getObject("end_date") != null ? toDateTime(rs.getObject("end_date")) : null);
 
 		return loginHistory;
 	};
+	
+	public static LocalDateTime toDateTime(Object dateTimeObject) {
+	    if (dateTimeObject instanceof LocalDateTime) {
+	        return (LocalDateTime) dateTimeObject;
+	    }
+	    return null;
+	}
 
 }
+

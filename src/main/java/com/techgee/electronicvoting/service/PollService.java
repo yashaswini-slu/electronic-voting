@@ -76,6 +76,7 @@ public class PollService {
 		return partyName.getFirstName().concat(" ").concat(partyName.getLastName());
 	}
 
+	@Transactional
 	private Long getRelationId(Long partyId) {
 		PartyRole partyRoleUser = partyRoleDao.getV1(Parameters.builder().id(partyId).foreignKey(PartyRole.USER_ROLE_CD).build(), 
 				PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElse(null);
