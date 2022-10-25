@@ -75,7 +75,7 @@ public class PasswordDao implements GenericDao<Password, Parameters, String> {
 	public Optional<Password> getV1(Parameters parameters, String whereClause)  {
 		Object parameter [] = switch(whereClause) {
 		case BY_LOGIN_ID -> new Object [] {
-				parameters.getWord() //User Id
+				parameters.getId() //login Id
 		};
 		default -> throw new VotingException("The requested method is not implemented");
 		};

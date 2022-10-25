@@ -4,8 +4,6 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,7 +31,7 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 	public static final String BY_PARTYID = "PartyId";
 	
 	@Override
-	public Optional<PartyName> createV1(@NotNull PartyName partyname, Parameters parameters) {
+	public Optional<PartyName> createV1(PartyName partyname, Parameters parameters) {
 			return getV1(new Parameters(insert(partyname, parameters)));
 	}
 
@@ -79,18 +77,18 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 				}
 				return ps;
 			}, holder);
-			return holder.getKey().longValue();
+		return holder.getKey().longValue();
 	}
 
 	@Override
 	public Optional<PartyName> getV1(Parameters parameters) {
 		try {
 			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PartyName.get"), partynameRowMapper,
-				parameters.getId()));
+				parameters.getId()));  //Party NameID
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new VotingException("Patry Name get method return more than one result. Contact developer");
+			throw new VotingException("PartyRole get method return more than one result. Contact developer");
 		} catch (Exception e) {
 			throw new VotingException(e.getMessage());
 		}
@@ -192,7 +190,7 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 
 		partyname.setRestOfName(rs.getObject("rest_of_name") != null ? rs.getString("rest_of_name") : null);
 
-		partyname.setIsPreferred(rs.getObject("preferred") != null ? rs.getBoolean("is_preferred") : null);
+		partyname.setIsPreferred(rs.getObject("is_preferred") != null ? rs.getBoolean("is_preferred") : null);
 
 		partyname.setStartDate(rs.getObject("start_date") != null ? (rs.getDate("start_date")).toLocalDate() : null);
 

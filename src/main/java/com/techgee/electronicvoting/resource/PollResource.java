@@ -1,4 +1,4 @@
-package com.techgee.electronicvoting.model;
+package com.techgee.electronicvoting.resource;
 
 import java.time.LocalDate;
 
@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Poll {
-
-	private Long pollId;
+public class PollResource {
+	
 	@NotNull
 	private String title;
 	@NotNull
@@ -22,15 +21,10 @@ public class Poll {
 	private LocalDate startDate;
 	@NotNull
 	private LocalDate endDate;
-	private Long pprId;
+	private Long prPrRelationId;
+	private String OrganiserName;
+	private Long pollId;
 	
-	//Getters and Setters
-	public Long getPollId() {
-		return pollId;
-	}
-	public void setPollId(Long pollId) {
-		this.pollId = pollId;
-	}
 	public String getTitle() {
 		return title;
 	}
@@ -55,17 +49,29 @@ public class Poll {
 	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
-	public Long getPprId() {
-		return pprId;
+	public Long getPrPrRelationId() {
+		return prPrRelationId;
 	}
-	public void setPprId(Long pprId) {
-		this.pprId = pprId;
+	public void setPrPrRelationId(Long prPrRelationId) {
+		this.prPrRelationId = prPrRelationId;
+	}
+	public String getOrganiserName() {
+		return OrganiserName;
+	}
+	public void setOrganiserName(String organiserName) {
+		OrganiserName = organiserName;
+	}
+	public Long getPollId() {
+		return pollId;
+	}
+	public void setPollId(Long pollId) {
+		this.pollId = pollId;
 	}
 	@Override
 	public String toString() {
-		return "Poll [pollId=" + pollId + ", title=" + title + ", description=" + description + ", startDate="
-				+ startDate + ", endDate=" + endDate + ", pprId=" + pprId + "]";
+		return "PollResource [title=" + title + ", description=" + description + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", prPrRelationId=" + prPrRelationId + ", OrganiserName=" + OrganiserName
+				+ ", pollId=" + pollId + "]";
 	}
-	
 	
 }
