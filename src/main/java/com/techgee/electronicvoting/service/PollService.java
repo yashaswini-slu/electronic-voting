@@ -48,16 +48,71 @@ public class PollService {
 		return createPoll(pollResource, new Parameters(prPrRelationId, login.getPartyId()));
 	}
 
+	
+	public PollResource get(Parameters parameters) {
+		Poll poll = pollDao.get(parameters);
+		return setPollResource(poll, Parameters.builder().foreignKey(getPartyUid(new Parameters(poll.getPprId()))).build());
+	}
+
+	public List<PollResource> list(Parameters parameters) {
+		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
+		Long prPrRelationId = getRelationId(login.getPartyId());
+		List<Poll> polls = pollDao.list(new Parameters(prPrRelationId), PollDao.BY_PPR_ID);
+		List<PollResource> pollResources = new ArrayList<>();
+		String organiseName = getOrganiserName(Parameters.builder().id(login.getPartyId()).build());
+		setPollResources(pollResources, polls, Parameters.builder().word(organiseName).build());
+		return pollResources;
+	}
+	
+	@Transactional
+	public PollResource update(PollResource pollResource, Parameters parameters) {
+		Poll poll = pollDao.get(parameters);
+		Poll newPoll = new Poll();
+		setCommonPollData(newPoll, pollResource);
+		if(poll.equals(newPoll) ) {
+			throw new VotingException("Poll not Modified"); 
+		}
+		newPoll = pollDao.update(newPoll, parameters);
+		parameters.setWord("Update");
+		return setPollResource(newPoll, parameters);
+	}
+	
+	private Long getPartyUid(Parameters parameters) {
+		PrPrRelation relation = prPrRelationDao.get(parameters);
+		PartyRole roleOrganiser = partyRoleDao.get(new Parameters(relation.getPartyRoleId2()));
+		return roleOrganiser.getPartyId();
+	}
+
+	private void setPollResources(List<PollResource> pollResources, List<Poll> polls, Parameters parameters) {
+		for(Poll poll : polls) {
+			PollResource pollResource = new PollResource();
+			pollResource.setOrganiserName(parameters.getWord());
+			pollResource.setDescription(poll.getDescription());
+			pollResource.setEndDate(poll.getEndDate());
+			pollResource.setPollId(poll.getPollId());
+			pollResource.setPrPrRelationId(poll.getPprId());
+			pollResource.setStartDate(poll.getStartDate());
+			pollResource.setTitle(poll.getTitle());
+			pollResources.add(pollResource);
+		}
+		
+	}
+	
 	private PollResource createPoll(PollResource pollResource, Parameters parameters) {
 		Poll poll = new Poll();
-		poll.setTitle(pollResource.getTitle());
-		poll.setDescription(pollResource.getDescription());
-		poll.setStartDate(pollResource.getStartDate());
-		poll.setEndDate(pollResource.getEndDate());
+		setCommonPollData(poll, pollResource);
 		poll.setPprId(parameters.getId());
 		poll = pollDao.create(poll, parameters);
 		return setPollResource(poll, parameters);
 	}
+
+	private void setCommonPollData(Poll poll, PollResource pollResource) {
+		poll.setTitle(pollResource.getTitle());
+		poll.setDescription(pollResource.getDescription());
+		poll.setStartDate(pollResource.getStartDate());
+		poll.setEndDate(pollResource.getEndDate());
+	}
+
 
 	private PollResource setPollResource(Poll poll, Parameters parameters) {
 		PollResource pollResource = new PollResource();
@@ -67,7 +122,9 @@ public class PollService {
 		pollResource.setEndDate(poll.getEndDate());
 		pollResource.setPollId(poll.getPollId());
 		pollResource.setPrPrRelationId(poll.getPprId());
-		pollResource.setOrganiserName(getOrganiserName(Parameters.builder().id(parameters.getForeignKey()).build()));
+		if(parameters.getWord() == null) {
+			pollResource.setOrganiserName(getOrganiserName(Parameters.builder().id(parameters.getForeignKey()).build()));
+		}
 		return pollResource;
 	}
 
@@ -114,40 +171,5 @@ public class PollService {
 		}
 	}
 
-	public PollResource get(Parameters parameters) {
-		Poll poll = pollDao.get(parameters);
-		return setPollResource(poll, Parameters.builder().foreignKey(getPartyUid(new Parameters(poll.getPprId()))).build());
-	}
-
-	private Long getPartyUid(Parameters parameters) {
-		PrPrRelation relation = prPrRelationDao.get(parameters);
-		PartyRole roleOrganiser = partyRoleDao.get(new Parameters(relation.getPartyRoleId2()));
-		return roleOrganiser.getPartyId();
-	}
-
-	public List<PollResource> list(Parameters parameters) {
-		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
-		Long prPrRelationId = getRelationId(login.getPartyId());
-		List<Poll> polls = pollDao.list(new Parameters(prPrRelationId), PollDao.BY_PPR_ID);
-		List<PollResource> pollResources = new ArrayList<>();
-		String organiseName = getOrganiserName(Parameters.builder().id(login.getPartyId()).build());
-		setPollResources(pollResources, polls, Parameters.builder().word(organiseName).build());
-		return pollResources;
-	}
-
-	private void setPollResources(List<PollResource> pollResources, List<Poll> polls, Parameters parameters) {
-		for(Poll poll : polls) {
-			PollResource pollResource = new PollResource();
-			pollResource.setOrganiserName(parameters.getWord());
-			pollResource.setDescription(poll.getDescription());
-			pollResource.setEndDate(poll.getEndDate());
-			pollResource.setPollId(poll.getPollId());
-			pollResource.setPrPrRelationId(poll.getPprId());
-			pollResource.setStartDate(poll.getStartDate());
-			pollResource.setTitle(poll.getTitle());
-			pollResources.add(pollResource);
-		}
-		
-	}
 
 }
