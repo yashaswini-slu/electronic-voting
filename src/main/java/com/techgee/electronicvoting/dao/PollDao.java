@@ -114,13 +114,14 @@ public class PollDao implements GenericDao<Poll, Parameters, String> {
 
 	@Override
 	public Optional<Poll> updateV1(Poll poll, Parameters parameters) {
-		jdbcTemplate.update(environment.getProperty("loginHistory.update"), 
+		jdbcTemplate.update(environment.getProperty("Poll.update"), 
 				poll.getTitle(),
 				poll.getDescription(),
 				poll.getStartDate(),
-				poll.getEndDate());
+				poll.getEndDate(),
+				parameters.getId());
 		try {
-			return getV1(new Parameters(poll.getPollId()));
+			return getV1(new Parameters(parameters.getId()));
 		} catch (Exception e) {
 			throw new VotingException( e.getMessage());
 		}
