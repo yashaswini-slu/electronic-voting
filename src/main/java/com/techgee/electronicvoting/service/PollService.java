@@ -77,6 +77,12 @@ public class PollService {
 		return setPollResource(newPoll, parameters);
 	}
 	
+	@Transactional
+	public boolean delete(Parameters parameters) {
+		Poll poll = pollDao.get(parameters);
+		return pollDao.delete(poll) == 1 ? true : false;
+	}
+	
 	private Long getPartyUid(Parameters parameters) {
 		PrPrRelation relation = prPrRelationDao.get(parameters);
 		PartyRole roleOrganiser = partyRoleDao.get(new Parameters(relation.getPartyRoleId2()));

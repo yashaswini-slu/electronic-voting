@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,11 @@ public class PollContoller {
 	@PatchMapping(value = "/update/{pollId}")
 	public PollResource update(@PathVariable(value = "pollId") Long pollId, @Valid @RequestBody PollResource pollResource) {
 		return pollService.update(pollResource, Parameters.builder().id(pollId).build());
+	}
+	
+	@DeleteMapping(value = "/delete/{pollId}")
+	public boolean delete(@PathVariable(value = "pollId") Long pollId) {
+		return pollService.delete(Parameters.builder().id(pollId).build());
 	}
 
 }
