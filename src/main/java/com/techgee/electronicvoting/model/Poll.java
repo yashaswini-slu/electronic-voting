@@ -1,6 +1,7 @@
 package com.techgee.electronicvoting.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
@@ -66,6 +67,24 @@ public class Poll {
 		return "Poll [pollId=" + pollId + ", title=" + title + ", description=" + description + ", startDate="
 				+ startDate + ", endDate=" + endDate + ", pprId=" + pprId + "]";
 	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(description, endDate, startDate, title);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Poll other = (Poll) obj;
+		return Objects.equals(description, other.description) && Objects.equals(endDate, other.endDate)
+				&& Objects.equals(startDate, other.startDate) && Objects.equals(title, other.title);
+	}
+	
+	
 	
 	
 }

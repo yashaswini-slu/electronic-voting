@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,11 @@ public class PollContoller {
 	@GetMapping(value="list/{loginId}")
 	public List<PollResource> list(@PathVariable(value="loginId") Long loginId) {
 		return pollService.list(Parameters.builder().id(loginId).build());
+	}
+	
+	@PatchMapping(value = "/update/{pollId}")
+	public PollResource update(@PathVariable(value = "pollId") Long pollId, @Valid @RequestBody PollResource pollResource) {
+		return pollService.update(pollResource, Parameters.builder().id(pollId).build());
 	}
 
 }
