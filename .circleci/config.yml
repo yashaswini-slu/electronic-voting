@@ -1,11 +1,6 @@
 version: 2.1
 jobs:
-  build:
-    filters:
-      branches:
-        only:
-          - master
-
+  build-and-test-api:
     docker:
       - image: cimg/openjdk:18.0.2
 
@@ -31,3 +26,14 @@ jobs:
       - store_artifacts:
          path: /home/circleci/project/target/electronic-voting-0.0.1-SNAPSHOT.jar
          destination: electronic-voting-0.0.1-SNAPSHOT.jar
+
+
+workflows:
+  sample:
+    jobs:
+      - build-and-test-api:
+          filters:
+            branches:
+              only:
+                - master
+                - TEC-45
