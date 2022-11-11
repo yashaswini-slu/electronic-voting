@@ -7,6 +7,10 @@ jobs:
     steps:
       - checkout
 
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
+
       - run:
          name: Installing dependencies and compiling the source code
          command: mvn clean install
@@ -14,6 +18,10 @@ jobs:
       - run:
          name: run maven test cases
          command: mvn test
+
+      - run:
+         name: docker build
+         command: docker build -t electronic-voting-api .
 
       - store_artifacts:
          path: /home/circleci/project/target/electronic-voting-0.0.1-SNAPSHOT.jar
