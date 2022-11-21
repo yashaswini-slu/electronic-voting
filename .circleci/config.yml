@@ -1,20 +1,39 @@
 version: 2.1
 jobs:
-  build:
+  build-and-test-api:
     docker:
       - image: cimg/openjdk:18.0.2
 
     steps:
       - checkout
 
-      - run:
-         name: Installing dependencies and compiling the source code
-         command: mvn clean install
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
 
       - run:
-         name: run maven test cases
-         command: mvn test
+         name: Installing dependencies and compiling the source code
+         command: mvn clean install -DskipTests
+
+#     - run:
+#        name: run maven test cases
+#        command: mvn test
+
+      - run:
+         name: docker build
+         command: docker build -t electronic-voting-api .
 
       - store_artifacts:
          path: /home/circleci/project/target/electronic-voting-0.0.1-SNAPSHOT.jar
          destination: electronic-voting-0.0.1-SNAPSHOT.jar
+
+
+workflows:
+  sample:
+    jobs:
+      - build-and-test-api:
+          filters:
+            branches:
+              only:
+                - master
+                - TEC-45
