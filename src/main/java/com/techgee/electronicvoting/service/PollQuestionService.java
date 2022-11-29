@@ -71,6 +71,20 @@ public class PollQuestionService {
 		return setResource(pollQuestion, parameters);
 	}
 	
+	public boolean deleteQuestion(Parameters parameters) {
+		PollQuestion question = pollQuestionDao.get(parameters);
+		List<AllowedResponseOption> options = allowedResponseOptionDao.list(new Parameters(question.getPollQuestionId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID);
+		options.forEach(option -> {
+			deleteOption(new Parameters(option.getAllowedResponseOptionId()));
+		});
+		return pollQuestionDao.delete(question) == 1 ? true : false;
+	}
+	
+	private boolean deleteOption(Parameters parameters) {
+		AllowedResponseOption option = allowedResponseOptionDao.get(parameters);
+		return allowedResponseOptionDao.delete(option) == 1 ? true : false;
+	}
+	
 	private void updateQuestionoptions(List<AllowedResponseOption> options) {
 		for(AllowedResponseOption option : options) {
 			updateOption(option, new Parameters(option.getAllowedResponseOptionId()));
