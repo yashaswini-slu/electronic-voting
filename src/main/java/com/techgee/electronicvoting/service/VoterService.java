@@ -2,7 +2,6 @@ package com.techgee.electronicvoting.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,6 +64,9 @@ public class VoterService {
 		return checkAndCreatePrPr(partyRole, parameters);
 	}
 	
+	/*
+	 * @param parameter - id: loginId
+	 * */
 	public List<PollResource> listPollToCastVote(Parameters parameters) {
 		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
 		PartyRole partyRoleVoter = partyRoleDao.getV1(new Parameters(login.getPartyId(), PartyRole.VOTER_ROLE_CD), PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElseThrow(() -> new VotingException("There is no Poll to cast vote"));
@@ -73,10 +75,7 @@ public class VoterService {
 		List<PrPrRelation> prPrRelation = prPrRelationDao.list(Parameters.builder().id(partyRoleUser.getPartyRoleId()).
 				foreignKey(partyRoleVoter.getPartyRoleId()).parentParameters(new Parameters
 						(PrPrRelation.USER_VOTER)).build(), PrPrRelationDao.BY_ROLES_AND_ROLE_CD_ENDDATE_NULL);
-		Set<Long> pollIds = new HashSet<>();
-		for(PrPrRelation prPrRelat: prPrRelation) {
-			pollIds.add(prPrRelat.getPollId());
-		}
+		Set<Long> pollIds = prPrRelation.stream().map(PrPrRelation::getPollId).collect(Collectors.toSet());
 		List<Poll> polls = pollDao.listIn(null, pollIds);
 		List<PollResource> pollResources = new ArrayList<>();
 		polls.forEach(poll -> {
