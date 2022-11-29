@@ -125,17 +125,23 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 	}
 
 	@Override
-	public Optional<AllowedResponseOption> updateV1(AllowedResponseOption transientObject, Parameters parameters) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+	public Optional<AllowedResponseOption> updateV1(AllowedResponseOption allowedResponseOption, Parameters parameters) {
+		jdbcTemplate.update(environment.getProperty("AllowedResponseOption.update"),
+				allowedResponseOption.getOption(),
+				allowedResponseOption.isCorrect(),
+				parameters.getId());
+		try {
+			return getV1(new Parameters(parameters.getId()));
+		} catch (Exception e) {
+			throw new VotingException( e.getMessage());
+		}
 	}
 
 	@Override
-	public int delete(AllowedResponseOption persistentObject) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int delete(AllowedResponseOption allowedResponseOption) {
+		return jdbcTemplate.update(environment.getProperty("AllowedResponseOption.delete"), allowedResponseOption.getAllowedResponseOptionId());
 	}
-
+	
 	@Override
 	public int delete(Parameters parameters, String whereClause) {
 		// TODO Auto-generated method stub

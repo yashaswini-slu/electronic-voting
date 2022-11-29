@@ -65,6 +65,63 @@ public class PollQuestionService {
 		}
 		return resources;
 	}
+	
+	/*
+	 * @param parameter - id: pollQuestionId
+	 * */
+	@Transactional
+	public PollQuestionOptionResource updateQuestion( PollQuestionOptionResource pollQuestionOptionResource, Parameters parameters) {
+		PollQuestion pollQuestionDb = pollQuestionDao.get(parameters);
+		PollQuestion pollQuestion = new PollQuestion();
+		pollQuestion.setPollId(pollQuestionOptionResource.getPollId());
+		pollQuestion.setPollQuestion(pollQuestionOptionResource.getQuestion());
+		pollQuestion.setPollQuestionId(pollQuestionOptionResource.getPollQuestionId());
+		if(!pollQuestionDb.equals(pollQuestion)) {
+			pollQuestion.setPollQuestionUuid(pollQuestionDb.getPollQuestionUuid());
+			pollQuestionDao.update(pollQuestion, parameters);
+		}
+		updateQuestionoptions(pollQuestionOptionResource.getOptions());
+		return setResource(pollQuestion, parameters);
+	}
+	
+	/*
+	 * @param parameter - id: pollQuestionId
+	 * */
+	@Transactional
+	public boolean deleteQuestion(Parameters parameters) {
+		PollQuestion question = pollQuestionDao.get(parameters);
+		List<AllowedResponseOption> options = allowedResponseOptionDao.list(new Parameters(question.getPollQuestionId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID);
+		options.forEach(option -> {
+			deleteOption(new Parameters(option.getAllowedResponseOptionId()));
+		});
+		return pollQuestionDao.delete(question) == 1 ? true : false;
+	}
+	
+	/*
+	 * @param parameter - id: optionId
+	 * */
+	private boolean deleteOption(Parameters parameters) {
+		AllowedResponseOption option = allowedResponseOptionDao.get(parameters);
+		return allowedResponseOptionDao.delete(option) == 1 ? true : false;
+	}
+	
+	private void updateQuestionoptions(List<AllowedResponseOption> options) {
+		for(AllowedResponseOption option : options) {
+			updateOption(option, new Parameters(option.getAllowedResponseOptionId()));
+		}
+	}
+	
+	/*
+	 * @param parameter - id: optionId
+	 * */
+	private AllowedResponseOption updateOption(AllowedResponseOption allowedResponseOption, Parameters parameters) {
+		AllowedResponseOption optionDb = allowedResponseOptionDao.get(parameters);
+		if(! optionDb.equals(allowedResponseOption)) {
+			return allowedResponseOptionDao.update(allowedResponseOption, parameters);
+		}
+		return null;
+	}
+
 
 	/*
 	 * Validate resource with pre-conditions
