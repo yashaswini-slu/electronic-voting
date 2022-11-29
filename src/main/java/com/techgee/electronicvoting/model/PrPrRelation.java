@@ -17,6 +17,7 @@ public class PrPrRelation {
 	private Long prPrRelationCd;
 	private LocalDate startDate;
 	private LocalDate endDate;
+	private Long pollId;
 	
 	//All Cd values
 	public static final Long USER_ORGANISE = 1L;
@@ -60,13 +61,19 @@ public class PrPrRelation {
 	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
+	public Long getPollId() {
+		return pollId;
+	}
+	public void setPollId(Long pollId) {
+		this.pollId = pollId;
+	}
 	
 	//ToString
 	@Override
 	public String toString() {
 		return "PrPrRelation [prPrRelationId=" + prPrRelationId + ", partyRoleId1=" + partyRoleId1 + ", partyRoleId2="
 				+ partyRoleId2 + ", prPrRelationCd=" + prPrRelationCd + ", startDate=" + startDate + ", endDate="
-				+ endDate + "]";
+				+ endDate + ", pollId=" + pollId + "]";
 	}
 	
 	
