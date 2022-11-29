@@ -49,6 +49,9 @@ public class VoterService {
 	@Autowired
 	VoterResponseDao voterResponseDao;
 	
+	/*
+	 * @param parameter - id: loginId
+	 * */
 	public List<VoterResource> listVoters(Parameters parameter) {
 		List<Login> loginUsers = loginDao.list(parameter);
 		loginUsers = loginUsers.stream().filter(p-> p.getLoginId() != parameter.getId()).collect(Collectors.toList());
@@ -61,6 +64,9 @@ public class VoterService {
 		return resources;
 	}
 	
+	/*
+	 * @param parameter - id: pollId
+	 * */
 	public boolean addVoter(VoterResource voterResource, Parameters parameters) {
 		PartyRole partyRole = partyRoleDao.getV1(new Parameters(voterResource.getPartyId(), PartyRole.VOTER_ROLE_CD), PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElse(null);
 		if(partyRole == null) {
@@ -89,6 +95,10 @@ public class VoterService {
 		return pollResources;
 	}
 	
+	/*
+	 * @param parameter - id: loginId
+	 *         - foreign key: pollId
+	 * */
 	public boolean castVote(List<PollQuestionOptionResource> pollQuestionOptionResources, Parameters parameters) {
 		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
 		PartyRole partyRoleVoter = partyRoleDao.getV1(new Parameters(login.getPartyId(), PartyRole.VOTER_ROLE_CD), PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElseThrow(() -> new VotingException("User does not has permission to cast vote"));
@@ -103,6 +113,9 @@ public class VoterService {
 		return setAndCreateVoteResponse(pollQuestionOptionResources, new Parameters(prPrRelation.getPrPrRelationId()));
 	}
 	
+	/*
+	 * @param parameter - id: prPrRelationId
+	 * */
 	private boolean setAndCreateVoteResponse(List<PollQuestionOptionResource> pollQuestionOptionResources, Parameters parameters) {
 		List<VoterResponse> voterResponseList = new ArrayList<>();
 		for(PollQuestionOptionResource resource : pollQuestionOptionResources) {
@@ -115,6 +128,9 @@ public class VoterService {
 		//we have get poll id from prPrRelation to get the result
 	}
 	
+	/*
+	 * @param parameter - id: prPrRelationId
+	 * */
 	private void setVoterResponse(VoterResponse voterResponse, PollQuestionOptionResource resource, Parameters parameters) {
 		voterResponse.setAllowedResponseOptionId(resource.getResponseOptionId());
 		voterResponse.setPrPrRelationId(parameters.getId());
@@ -142,6 +158,9 @@ public class VoterService {
 		return voterResource;
 	}
 	
+	/*
+	 * @param parameter - id: partyId
+	 * */
 	private PartyRole createPartyRole(Parameters parameters) {
 		PartyRole partyRole = new PartyRole();
 		partyRole.setPartyId(parameters.getId());
@@ -150,6 +169,9 @@ public class VoterService {
 		return partyRoleDao.create(partyRole, parameters);
 	}
 	
+	/*
+	 * @param parameter - id: pollId
+	 * */
 	private boolean checkAndCreatePrPr(PartyRole partyRoleVoter, Parameters parameters) {
 		PartyRole partyRoleUser = partyRoleDao.getV1(Parameters.builder().id(partyRoleVoter.getPartyId()).foreignKey(PartyRole.USER_ROLE_CD).build(), 
 				PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElse(null);
