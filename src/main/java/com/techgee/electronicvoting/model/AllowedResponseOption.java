@@ -1,5 +1,7 @@
 package com.techgee.electronicvoting.model;
 
+import java.util.Objects;
+
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -14,6 +16,7 @@ public class AllowedResponseOption {
 	private Long pollQuestionId;
 	@NotNull
 	private String option;
+	private Boolean isCorrect;
 	
 	//Getters and Setters
 	public Long getAllowedResponseOptionId() {
@@ -34,13 +37,38 @@ public class AllowedResponseOption {
 	public void setOption(String option) {
 		this.option = option;
 	}
+	public Boolean isCorrect() {
+		return isCorrect;
+	}
+	public void setCorrect(Boolean isCorrect) {
+		this.isCorrect = isCorrect;
+	}
 	
-	//ToString
 	@Override
 	public String toString() {
 		return "AllowedResponseOption [allowedResponseOptionId=" + allowedResponseOptionId + ", pollQuestionId="
-				+ pollQuestionId + ", option=" + option + "]";
+				+ pollQuestionId + ", option=" + option + ", isCorrect=" + isCorrect + "]";
 	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(isCorrect, option, pollQuestionId);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AllowedResponseOption other = (AllowedResponseOption) obj;
+		return Objects.equals(isCorrect, other.isCorrect) && Objects.equals(option, other.option)
+				&& Objects.equals(pollQuestionId, other.pollQuestionId);
+	}
+	
+	
+	
+	
 	
 	
 

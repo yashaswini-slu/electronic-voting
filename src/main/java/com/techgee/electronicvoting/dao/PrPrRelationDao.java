@@ -30,7 +30,12 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 	@Autowired
 	Environment environment;
 	
+	public static final String BY_ROLES_AND_ROLE_CD_ENDDATE_NULL_POLL_NULL = "RolesAndRoleCdAndEndDateNullPollNull";
+	
 	public static final String BY_ROLES_AND_ROLE_CD_ENDDATE_NULL = "RolesAndRoleCdAndEndDateNull";
+	
+	public static final String BY_ROLES_AND_ROLE_CD_POLL_ID_ENDDATE_NULL = "RolesAndRoleCdPollIdAndEndDateNull";
+
 
 	@Override
 	public Optional<PrPrRelation> createV1(@NotNull PrPrRelation prPrRelation, Parameters parameters) {
@@ -69,6 +74,11 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 				} else {
 					ps.setObject(5, prPrRelation.getEndDate());
 				}
+				if (prPrRelation.getPollId() == null) {
+					ps.setObject(6, null);
+				} else {
+					ps.setLong(6, prPrRelation.getPollId());
+				}
 				return ps;
 			}, holder);
 		} catch (DataIntegrityViolationException e) {
@@ -93,7 +103,8 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 		List<PrPrRelation> prPrRelations = jdbcTemplate.query(environment.getProperty("PrPrRelation.check"), prPrRelationRowMapper, 
 				prPrRelation.getPartyRoleId1(),
 				prPrRelation.getPartyRoleId2(),
-				prPrRelation.getPrPrRelationCd());
+				prPrRelation.getPrPrRelationCd(),
+				prPrRelation.getPollId());
 		if (!prPrRelations.isEmpty()) {
 			throw new VotingException("Party Party Relationship is already exist. "
 					+ "Please use already existing one or close the previous relationship to create new one.");
@@ -121,11 +132,18 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 	@Override
 	public Optional<PrPrRelation> getV1(Parameters parameters, String whereClause)  {
 		try {
-			if (whereClause.equalsIgnoreCase(BY_ROLES_AND_ROLE_CD_ENDDATE_NULL)) {
+			if (whereClause.equalsIgnoreCase(BY_ROLES_AND_ROLE_CD_ENDDATE_NULL_POLL_NULL)) {
 				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PrPrRelation.getBy" + whereClause), prPrRelationRowMapper, 
 						parameters.getId(), //PartyRole
 						parameters.getForeignKey(), //PartyRole1
 						parameters.getParentParameters().getId())); //PartyRoleCd1));//Party Role Cd 
+			}
+			if(whereClause.equalsIgnoreCase(BY_ROLES_AND_ROLE_CD_POLL_ID_ENDDATE_NULL)) {
+				return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("PrPrRelation.getBy" + whereClause), prPrRelationRowMapper, 
+						parameters.getId(), //PartyRole
+						parameters.getForeignKey(), //PartyRole1
+						parameters.getParentParameters().getId(),//PartyRoleCd1));//Party Role Cd 
+						parameters.getParentParameters().getForeignKey())); //PollId
 			}
 			throw new VotingException("Party Role DAO where clause method is not implemented");
 		} catch (EmptyResultDataAccessException e) {
@@ -134,7 +152,8 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 			throw new VotingException("PartyRole get where method return more than one result. Contact developer");
 		} catch (Exception e) {
 			throw new VotingException(e.getMessage());
-		}	}
+		}	
+	}
 
 	@Override
 	public List<PrPrRelation> list(Parameters parameters)  {
@@ -148,8 +167,19 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 
 	@Override
 	public List<PrPrRelation> list(Parameters parameters, String whereClause)  {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			if(whereClause.equalsIgnoreCase(BY_ROLES_AND_ROLE_CD_ENDDATE_NULL)) {
+				return (jdbcTemplate.query(environment.getProperty("PrPrRelation.listBy" + whereClause), prPrRelationRowMapper, 
+						parameters.getId(), //PartyRole
+						parameters.getForeignKey(), //PartyRole1
+						parameters.getParentParameters().getId())); //Party Role Cd 
+			}
+			throw new VotingException("Party Relation DAO where clause method is not implemented");
+		} catch (IncorrectResultSizeDataAccessException e) {
+			throw new VotingException("PartyRole get where method return more than one result. Contact developer");
+		} catch (Exception e) {
+			throw new VotingException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -185,7 +215,9 @@ RowMapper<PrPrRelation> prPrRelationRowMapper = (rs, rowNum) -> {
 		prPrRelation.setStartDate(rs.getObject("start_date") != null ? rs.getDate("start_date").toLocalDate(): null);
 
 		prPrRelation.setEndDate(rs.getObject("end_date") != null ? rs.getDate("end_date").toLocalDate() : null);
-
+		
+		prPrRelation.setPollId(rs.getObject("poll_id_poll") != null ? rs.getLong("poll_id_poll") : null);
+		
 		return prPrRelation;
 	};
 

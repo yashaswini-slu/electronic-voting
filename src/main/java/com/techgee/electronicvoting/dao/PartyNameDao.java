@@ -3,6 +3,7 @@ package com.techgee.electronicvoting.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -173,6 +174,20 @@ public class PartyNameDao implements GenericDao<PartyName, Parameters, String> {
 		}
 		return 0;
 	}
+	
+	public List<PartyName> listIn(Parameters parameters, Set<Long> inValues, String whereClause) {
+		
+		try {
+			if(whereClause.equals(BY_PARTYID)) {
+				String query = setInvalues(environment.getProperty("PartyName.listIn" + whereClause), "%IDS%", inValues);
+				return jdbcTemplate.query(query, partynameRowMapper);
+			}
+			throw new VotingException( "whereClause method not implemented for partyName");
+		} catch (EmptyResultDataAccessException e) {
+			throw new VotingException(e.getMessage());
+		}
+	}
+
 	
 	RowMapper<PartyName> partynameRowMapper = (rs, rowNum) -> {
 
