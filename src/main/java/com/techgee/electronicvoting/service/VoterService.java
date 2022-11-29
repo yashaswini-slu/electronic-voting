@@ -1,6 +1,7 @@
 package com.techgee.electronicvoting.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -14,12 +15,15 @@ import com.techgee.electronicvoting.dao.PartyNameDao;
 import com.techgee.electronicvoting.dao.PartyRoleDao;
 import com.techgee.electronicvoting.dao.PollDao;
 import com.techgee.electronicvoting.dao.PrPrRelationDao;
+import com.techgee.electronicvoting.dao.VoterResponseDao;
 import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.Login;
 import com.techgee.electronicvoting.model.PartyName;
 import com.techgee.electronicvoting.model.PartyRole;
 import com.techgee.electronicvoting.model.Poll;
 import com.techgee.electronicvoting.model.PrPrRelation;
+import com.techgee.electronicvoting.model.VoterResponse;
+import com.techgee.electronicvoting.resource.PollQuestionOptionResource;
 import com.techgee.electronicvoting.resource.PollResource;
 import com.techgee.electronicvoting.resource.VoterResource;
 import com.techgee.electronicvoting.shared.Parameters;
@@ -42,7 +46,8 @@ public class VoterService {
 	@Autowired
 	PollDao pollDao;
 	
-	
+	@Autowired
+	VoterResponseDao voterResponseDao;
 	
 	public List<VoterResource> listVoters(Parameters parameter) {
 		List<Login> loginUsers = loginDao.list(parameter);
@@ -83,6 +88,39 @@ public class VoterService {
 		});
 		return pollResources;
 	}
+	
+	public boolean castVote(List<PollQuestionOptionResource> pollQuestionOptionResources, Parameters parameters) {
+		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
+		PartyRole partyRoleVoter = partyRoleDao.getV1(new Parameters(login.getPartyId(), PartyRole.VOTER_ROLE_CD), PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElseThrow(() -> new VotingException("User does not has permission to cast vote"));
+		PartyRole partyRoleUser = partyRoleDao.getV1(Parameters.builder().id(partyRoleVoter.getPartyId()).foreignKey(PartyRole.USER_ROLE_CD).build(), 
+				PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElse(null);
+		PrPrRelation prPrRelation = prPrRelationDao.getV1(Parameters.builder().id(partyRoleUser.getPartyRoleId()).
+				foreignKey(partyRoleVoter.getPartyRoleId()).parentParameters(new Parameters
+						(PrPrRelation.USER_VOTER, parameters.getForeignKey())).build(), PrPrRelationDao.BY_ROLES_AND_ROLE_CD_POLL_ID_ENDDATE_NULL).orElseThrow(() -> new VotingException("User does not has permission to cast vote"));
+		if(parameters.getForeignKey() != prPrRelation.getPollId()) {
+			throw new VotingException("");
+		}
+		return setAndCreateVoteResponse(pollQuestionOptionResources, new Parameters(prPrRelation.getPrPrRelationId()));
+	}
+	
+	private boolean setAndCreateVoteResponse(List<PollQuestionOptionResource> pollQuestionOptionResources, Parameters parameters) {
+		List<VoterResponse> voterResponseList = new ArrayList<>();
+		for(PollQuestionOptionResource resource : pollQuestionOptionResources) {
+			VoterResponse voterResponse = new VoterResponse();
+			setVoterResponse(voterResponse, resource, parameters);
+			voterResponseList.add(voterResponse);
+		}
+		voterResponseDao.insertBatch(voterResponseList);
+		return true;
+		//we have get poll id from prPrRelation to get the result
+	}
+	
+	private void setVoterResponse(VoterResponse voterResponse, PollQuestionOptionResource resource, Parameters parameters) {
+		voterResponse.setAllowedResponseOptionId(resource.getResponseOptionId());
+		voterResponse.setPrPrRelationId(parameters.getId());
+		voterResponse.setCastTime(LocalDateTime.now());
+	}
+
 	
 	private PollResource setPollResource(Poll poll) {
 		PollResource pollResource = new PollResource();
