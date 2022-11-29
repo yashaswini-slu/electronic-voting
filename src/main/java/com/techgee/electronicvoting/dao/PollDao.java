@@ -3,6 +3,7 @@ package com.techgee.electronicvoting.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -137,6 +138,16 @@ public class PollDao implements GenericDao<Poll, Parameters, String> {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public List<Poll> listIn(Parameters parameters, Set<Long> inValues) {
+			
+			try {
+				String query = setInvalues(environment.getProperty("Poll.listIn"), "%IDS%", inValues);
+				return jdbcTemplate.query(query, pollRowMapper);
+			} catch (EmptyResultDataAccessException e) {
+				throw new VotingException(e.getMessage());
+			}
+		}
 	
 RowMapper<Poll> pollRowMapper = (rs, rowNum) -> {
 		
