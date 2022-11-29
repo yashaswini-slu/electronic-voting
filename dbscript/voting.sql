@@ -65,7 +65,7 @@ CREATE TABLE public.poll (
 	title text,
 	description text NOT NULL,
 	start_date date NOT NULL,
-	end_date smallint NOT NULL,
+	end_date date NOT NULL,
 	pr_pr_relation_id_pr_pr_relation bigint,
 	CONSTRAINT poll_pk PRIMARY KEY (poll_id)
 
@@ -185,6 +185,7 @@ CREATE TABLE public.pr_pr_relation (
 	start_date timestamptz NOT NULL,
 	end_date timestamptz,
 	weightage smallint,
+	poll_id_poll bigint,
 	CONSTRAINT pr_pr_relation_pk PRIMARY KEY (pr_pr_relation_id)
 
 );
@@ -440,6 +441,13 @@ ON DELETE SET NULL ON UPDATE CASCADE;
 -- ALTER TABLE public.poll DROP CONSTRAINT IF EXISTS pr_pr_relation_fk CASCADE;
 ALTER TABLE public.poll ADD CONSTRAINT pr_pr_relation_fk FOREIGN KEY (pr_pr_relation_id_pr_pr_relation)
 REFERENCES public.pr_pr_relation (pr_pr_relation_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
+-- ddl-end --
+
+-- object: poll_fk | type: CONSTRAINT --
+-- ALTER TABLE public.pr_pr_relation DROP CONSTRAINT IF EXISTS poll_fk CASCADE;
+ALTER TABLE public.pr_pr_relation ADD CONSTRAINT poll_fk FOREIGN KEY (poll_id_poll)
+REFERENCES public.poll (poll_id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 

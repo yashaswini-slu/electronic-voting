@@ -87,7 +87,7 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 	public Optional<AllowedResponseOption> getV1(Parameters parameters) {
 		try {
 			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("AllowedResponseOption.get"), allowedResponseOptionRowMapper,
-				parameters.getId()));  //pollQuestionId
+				parameters.getId()));  //option id
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {

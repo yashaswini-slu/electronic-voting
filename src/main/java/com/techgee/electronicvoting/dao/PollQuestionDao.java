@@ -4,8 +4,6 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,7 +30,7 @@ public class PollQuestionDao implements GenericDao<PollQuestion, Parameters, Str
 	public static final String BY_POLL_ID = "PollId";
 
 	@Override
-	public Optional<PollQuestion> createV1(@NotNull PollQuestion pollQuestion, Parameters parameters) {
+	public Optional<PollQuestion> createV1(PollQuestion pollQuestion, Parameters parameters) {
 		return getV1(new Parameters(insert(pollQuestion, parameters)));
 	}
 
@@ -91,7 +89,7 @@ public class PollQuestionDao implements GenericDao<PollQuestion, Parameters, Str
 	public List<PollQuestion> list(Parameters parameters, String whereClause) {
 		Object parameter [] = switch(whereClause) {
 		case BY_POLL_ID -> new Object [] {
-				parameters.getId() //login Id
+				parameters.getId() //poll Id
 		};
 		default -> throw new VotingException("The requested method is not implemented");
 		};
