@@ -69,6 +69,7 @@ public class PollQuestionService {
 	/*
 	 * @param parameter - id: pollQuestionId
 	 * */
+	@Transactional
 	public PollQuestionOptionResource updateQuestion( PollQuestionOptionResource pollQuestionOptionResource, Parameters parameters) {
 		PollQuestion pollQuestionDb = pollQuestionDao.get(parameters);
 		PollQuestion pollQuestion = new PollQuestion();
@@ -86,6 +87,7 @@ public class PollQuestionService {
 	/*
 	 * @param parameter - id: pollQuestionId
 	 * */
+	@Transactional
 	public boolean deleteQuestion(Parameters parameters) {
 		PollQuestion question = pollQuestionDao.get(parameters);
 		List<AllowedResponseOption> options = allowedResponseOptionDao.list(new Parameters(question.getPollQuestionId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID);
