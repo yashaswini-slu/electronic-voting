@@ -102,8 +102,11 @@ public class LoginDao implements GenericDao<Login, Parameters, String> {
 
 	@Override
 	public List<Login> list(Parameters parameters)  {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return jdbcTemplate.query(environment.getProperty("Login.list"), loginRowMapper);
+	} catch (Exception e) {
+		throw new VotingException(e.getMessage());
+	}
 	}
 
 	@Override
