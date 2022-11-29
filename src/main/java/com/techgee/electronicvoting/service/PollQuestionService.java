@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.techgee.electronicvoting.dao.AllowedResponseOptionDao;
 import com.techgee.electronicvoting.dao.PollDao;
@@ -30,6 +31,10 @@ public class PollQuestionService {
 	@Autowired
 	PollDao pollDao;
 
+	/*
+	 * @param parameter - id: pollId
+	 * */
+	@Transactional
 	public PollQuestionOptionResource create( PollQuestionOptionResource pollQuestionOptionResource,
 			Parameters parameters) {
 		Poll poll = pollDao.getV1(parameters).orElseThrow(() -> new VotingException("Poll Id does not exist"));
@@ -44,10 +49,14 @@ public class PollQuestionService {
 		return setPollQuestionResource(parameters);
 	}
 	
+	/*
+	 * @param parameter - id: pollId
+	 * */
 	public List<PollQuestionOptionResource> listQuestions(Parameters parameters) {
 		Poll poll = pollDao.getV1(parameters).orElse(null);
 		List<PollQuestionOptionResource> resources = new ArrayList<>();
 		if(poll !=null) {
+			//list poll questions by pollId
 			List<PollQuestion> pollQuestion = pollQuestionDao.list(parameters, PollQuestionDao.BY_POLL_ID);
 			pollQuestion.forEach(pq -> {
 				resources.add(setResource(pq, parameters));
@@ -57,6 +66,9 @@ public class PollQuestionService {
 		return resources;
 	}
 
+	/*
+	 * Validate resource with pre-conditions
+	 * */
 	private void validateResource( PollQuestionOptionResource pollQuestionOptionResource) {
 		if(pollQuestionOptionResource.getOptions().size() < 2) {
 			throw new VotingException("Question should contain atleast 2 options");
@@ -66,6 +78,9 @@ public class PollQuestionService {
 		}
 	}
 	
+	/*
+	 * @param parameter - id: pollQuestionId
+	 * */
 	private void createOptions( PollQuestionOptionResource pollQuestionOptionResource, Parameters parameters) {
 		List<AllowedResponseOption> options = pollQuestionOptionResource.getOptions();
 		options.forEach(op -> op.setPollQuestionId(parameters.getId()));
@@ -81,11 +96,17 @@ public class PollQuestionService {
 		return pollQuestion.getPollQuestionId();
 	}
 	
+	/*
+	 * @param parameter - id: pollQuestionId
+	 * */
 	private PollQuestionOptionResource setPollQuestionResource(Parameters parameters) {
 		PollQuestion pollQuestion = pollQuestionDao.get(new Parameters(parameters.getForeignKey()));
 		return setResource(pollQuestion, parameters);
 	}
 	
+	/*
+	 * @param parameter - id: pollQuestionId
+	 * */
 	private PollQuestionOptionResource setResource(PollQuestion pollQuestion, Parameters parameters) {
 		PollQuestionOptionResource resource = new PollQuestionOptionResource();
 		resource.setQuestion(pollQuestion.getPollQuestion());
