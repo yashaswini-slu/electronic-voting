@@ -56,6 +56,35 @@ public class PollQuestionService {
 		}
 		return resources;
 	}
+	
+	public PollQuestionOptionResource updateQuestion( PollQuestionOptionResource pollQuestionOptionResource, Parameters parameters) {
+		PollQuestion pollQuestionDb = pollQuestionDao.get(parameters);
+		PollQuestion pollQuestion = new PollQuestion();
+		pollQuestion.setPollId(pollQuestionOptionResource.getPollId());
+		pollQuestion.setPollQuestion(pollQuestionOptionResource.getQuestion());
+		pollQuestion.setPollQuestionId(pollQuestionOptionResource.getPollQuestionId());
+		if(!pollQuestionDb.equals(pollQuestion)) {
+			pollQuestion.setPollQuestionUuid(pollQuestionDb.getPollQuestionUuid());
+			pollQuestionDao.update(pollQuestion, parameters);
+		}
+		updateQuestionoptions(pollQuestionOptionResource.getOptions());
+		return setResource(pollQuestion, parameters);
+	}
+	
+	private void updateQuestionoptions(List<AllowedResponseOption> options) {
+		for(AllowedResponseOption option : options) {
+			updateOption(option, new Parameters(option.getAllowedResponseOptionId()));
+		}
+	}
+	
+	private AllowedResponseOption updateOption(AllowedResponseOption allowedResponseOption, Parameters parameters) {
+		AllowedResponseOption optionDb = allowedResponseOptionDao.get(parameters);
+		if(! optionDb.equals(allowedResponseOption)) {
+			return allowedResponseOptionDao.update(allowedResponseOption, parameters);
+		}
+		return null;
+	}
+
 
 	private void validateResource( PollQuestionOptionResource pollQuestionOptionResource) {
 		if(pollQuestionOptionResource.getOptions().size() < 2) {
