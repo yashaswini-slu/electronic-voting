@@ -115,9 +115,8 @@ public class PollQuestionDao implements GenericDao<PollQuestion, Parameters, Str
 	}
 
 	@Override
-	public int delete(PollQuestion persistentObject) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int delete(PollQuestion pollQuestion) {
+		return jdbcTemplate.update(environment.getProperty("PollQuestion.delete"), pollQuestion.getPollQuestionId());
 	}
 
 	@Override

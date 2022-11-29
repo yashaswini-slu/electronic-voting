@@ -138,11 +138,10 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 	}
 
 	@Override
-	public int delete(AllowedResponseOption persistentObject) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int delete(AllowedResponseOption allowedResponseOption) {
+		return jdbcTemplate.update(environment.getProperty("AllowedResponseOption.delete"), allowedResponseOption.getAllowedResponseOptionId());
 	}
-
+	
 	@Override
 	public int delete(Parameters parameters, String whereClause) {
 		// TODO Auto-generated method stub
