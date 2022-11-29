@@ -28,6 +28,9 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 	
 	@Autowired
 	Environment environment;
+	
+	public static final String BY_POLL_QUESTION_ID = "PollQuestionId";
+	
 
 	@Override
 	public Optional<AllowedResponseOption> createV1(AllowedResponseOption allowedResponseOption,
@@ -108,8 +111,17 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 
 	@Override
 	public List<AllowedResponseOption> list(Parameters parameters, String whereClause) {
-		// TODO Auto-generated method stub
-		return null;
+		Object parameter [] = switch(whereClause) {
+		case BY_POLL_QUESTION_ID -> new Object [] {
+				parameters.getId() //question Id
+		};
+		default -> throw new VotingException("The requested method is not implemented");
+		};
+		try {
+				return jdbcTemplate.query(environment.getProperty("AllowedResponseOption.listBy" + whereClause), allowedResponseOptionRowMapper, parameter);
+		} catch (Exception e) {
+			throw new VotingException(e.getMessage());
+		}
 	}
 
 	@Override

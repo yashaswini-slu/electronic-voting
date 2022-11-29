@@ -1,15 +1,16 @@
 package com.techgee.electronicvoting.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.techgee.electronicvoting.dao.AllowedResponseOptionDao1;
+import com.techgee.electronicvoting.dao.AllowedResponseOptionDao;
 import com.techgee.electronicvoting.dao.PollDao;
-import com.techgee.electronicvoting.dao.PollQuestionDao1;
+import com.techgee.electronicvoting.dao.PollQuestionDao;
 import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.AllowedResponseOption;
 import com.techgee.electronicvoting.model.Poll;
@@ -21,10 +22,10 @@ import com.techgee.electronicvoting.shared.Parameters;
 public class PollQuestionService {
 	
 	@Autowired
-	AllowedResponseOptionDao1 allowedResponseOptionDao;
+	AllowedResponseOptionDao allowedResponseOptionDao;
 	
 	@Autowired
-	PollQuestionDao1 pollQuestionDao;
+	PollQuestionDao pollQuestionDao;
 	
 	@Autowired
 	PollDao pollDao;
@@ -41,6 +42,19 @@ public class PollQuestionService {
 		createOptions(pollQuestionOptionResource, new Parameters(pollQuestion));
 		parameters.setForeignKey(pollQuestion);
 		return setPollQuestionResource(parameters);
+	}
+	
+	public List<PollQuestionOptionResource> listQuestions(Parameters parameters) {
+		Poll poll = pollDao.getV1(parameters).orElse(null);
+		List<PollQuestionOptionResource> resources = new ArrayList<>();
+		if(poll !=null) {
+			List<PollQuestion> pollQuestion = pollQuestionDao.list(parameters, PollQuestionDao.BY_POLL_ID);
+			pollQuestion.forEach(pq -> {
+				resources.add(setResource(pq, parameters));
+			});
+			
+		}
+		return resources;
 	}
 
 	private void validateResource( PollQuestionOptionResource pollQuestionOptionResource) {
@@ -76,7 +90,7 @@ public class PollQuestionService {
 		PollQuestionOptionResource resource = new PollQuestionOptionResource();
 		resource.setQuestion(pollQuestion.getPollQuestion());
 		resource.setPollQuestionId(pollQuestion.getPollQuestionId());
-		List<AllowedResponseOption> options = allowedResponseOptionDao.list(new Parameters(pollQuestion.getPollQuestionId()), AllowedResponseOptionDao1.BY_POLL_QUESTION_ID);
+		List<AllowedResponseOption> options = allowedResponseOptionDao.list(new Parameters(pollQuestion.getPollQuestionId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID);
 		resource.setOptions(options);
 		resource.setPollId(parameters.getId());
 		return resource;

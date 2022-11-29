@@ -89,8 +89,17 @@ public class PollQuestionDao implements GenericDao<PollQuestion, Parameters, Str
 
 	@Override
 	public List<PollQuestion> list(Parameters parameters, String whereClause) {
-		// TODO Auto-generated method stub
-		return null;
+		Object parameter [] = switch(whereClause) {
+		case BY_POLL_ID -> new Object [] {
+				parameters.getId() //login Id
+		};
+		default -> throw new VotingException("The requested method is not implemented");
+		};
+		try {
+				return jdbcTemplate.query(environment.getProperty("PollQuestion.listBy" + whereClause), pollQuestionRowMapper, parameter);
+		} catch (Exception e) {
+			throw new VotingException(e.getMessage());
+		}
 	}
 
 	@Override
