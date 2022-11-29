@@ -66,6 +66,9 @@ public class PollQuestionService {
 		return resources;
 	}
 	
+	/*
+	 * @param parameter - id: pollQuestionId
+	 * */
 	public PollQuestionOptionResource updateQuestion( PollQuestionOptionResource pollQuestionOptionResource, Parameters parameters) {
 		PollQuestion pollQuestionDb = pollQuestionDao.get(parameters);
 		PollQuestion pollQuestion = new PollQuestion();
@@ -80,6 +83,9 @@ public class PollQuestionService {
 		return setResource(pollQuestion, parameters);
 	}
 	
+	/*
+	 * @param parameter - id: pollQuestionId
+	 * */
 	public boolean deleteQuestion(Parameters parameters) {
 		PollQuestion question = pollQuestionDao.get(parameters);
 		List<AllowedResponseOption> options = allowedResponseOptionDao.list(new Parameters(question.getPollQuestionId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID);
@@ -89,6 +95,9 @@ public class PollQuestionService {
 		return pollQuestionDao.delete(question) == 1 ? true : false;
 	}
 	
+	/*
+	 * @param parameter - id: optionId
+	 * */
 	private boolean deleteOption(Parameters parameters) {
 		AllowedResponseOption option = allowedResponseOptionDao.get(parameters);
 		return allowedResponseOptionDao.delete(option) == 1 ? true : false;
@@ -100,6 +109,9 @@ public class PollQuestionService {
 		}
 	}
 	
+	/*
+	 * @param parameter - id: optionId
+	 * */
 	private AllowedResponseOption updateOption(AllowedResponseOption allowedResponseOption, Parameters parameters) {
 		AllowedResponseOption optionDb = allowedResponseOptionDao.get(parameters);
 		if(! optionDb.equals(allowedResponseOption)) {
