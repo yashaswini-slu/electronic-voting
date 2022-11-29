@@ -12,12 +12,15 @@ import org.springframework.stereotype.Service;
 import com.techgee.electronicvoting.dao.LoginDao;
 import com.techgee.electronicvoting.dao.PartyNameDao;
 import com.techgee.electronicvoting.dao.PartyRoleDao;
+import com.techgee.electronicvoting.dao.PollDao;
 import com.techgee.electronicvoting.dao.PrPrRelationDao;
 import com.techgee.electronicvoting.exception.VotingException;
 import com.techgee.electronicvoting.model.Login;
 import com.techgee.electronicvoting.model.PartyName;
 import com.techgee.electronicvoting.model.PartyRole;
+import com.techgee.electronicvoting.model.Poll;
 import com.techgee.electronicvoting.model.PrPrRelation;
+import com.techgee.electronicvoting.resource.PollResource;
 import com.techgee.electronicvoting.resource.VoterResource;
 import com.techgee.electronicvoting.shared.Parameters;
 
@@ -35,6 +38,9 @@ public class VoterService {
 	
 	@Autowired
 	PrPrRelationDao prPrRelationDao;
+	
+	@Autowired
+	PollDao pollDao;
 	
 	
 	
@@ -57,6 +63,38 @@ public class VoterService {
 		}
 		return checkAndCreatePrPr(partyRole, parameters);
 	}
+	
+	/*
+	 * @param parameter - id: loginId
+	 * */
+	public List<PollResource> listPollToCastVote(Parameters parameters) {
+		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
+		PartyRole partyRoleVoter = partyRoleDao.getV1(new Parameters(login.getPartyId(), PartyRole.VOTER_ROLE_CD), PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElseThrow(() -> new VotingException("There is no Poll to cast vote"));
+		PartyRole partyRoleUser = partyRoleDao.getV1(Parameters.builder().id(partyRoleVoter.getPartyId()).foreignKey(PartyRole.USER_ROLE_CD).build(), 
+				PartyRoleDao.BY_PARTYID_AND_PARTYROLECD).orElse(null);
+		List<PrPrRelation> prPrRelation = prPrRelationDao.list(Parameters.builder().id(partyRoleUser.getPartyRoleId()).
+				foreignKey(partyRoleVoter.getPartyRoleId()).parentParameters(new Parameters
+						(PrPrRelation.USER_VOTER)).build(), PrPrRelationDao.BY_ROLES_AND_ROLE_CD_ENDDATE_NULL);
+		Set<Long> pollIds = prPrRelation.stream().map(PrPrRelation::getPollId).collect(Collectors.toSet());
+		List<Poll> polls = pollDao.listIn(null, pollIds);
+		List<PollResource> pollResources = new ArrayList<>();
+		polls.forEach(poll -> {
+			pollResources.add(setPollResource(poll));
+		});
+		return pollResources;
+	}
+	
+	private PollResource setPollResource(Poll poll) {
+		PollResource pollResource = new PollResource();
+		pollResource.setTitle(poll.getTitle());
+		pollResource.setDescription(poll.getDescription());
+		pollResource.setStartDate(poll.getStartDate());
+		pollResource.setEndDate(poll.getEndDate());
+		pollResource.setPollId(poll.getPollId());
+		pollResource.setPrPrRelationId(poll.getPprId());
+		return pollResource;
+	}
+
 	
 	private VoterResource setVoterResource(PartyName partyName) {
 		VoterResource voterResource  = new VoterResource();
