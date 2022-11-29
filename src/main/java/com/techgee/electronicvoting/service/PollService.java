@@ -151,7 +151,7 @@ public class PollService {
 
 		PrPrRelation prPrRelation = prPrRelationDao.get(Parameters.builder().id(partyRoleUser.getPartyRoleId()).
 				foreignKey(partyRoleOrganiser.getPartyRoleId()).parentParameters(new Parameters
-						(PrPrRelation.USER_ORGANISE)).build(), PrPrRelationDao.BY_ROLES_AND_ROLE_CD_ENDDATE_NULL);
+						(PrPrRelation.USER_ORGANISE)).build(), PrPrRelationDao.BY_ROLES_AND_ROLE_CD_ENDDATE_NULL_POLL_NULL);
 		if(prPrRelation == null) {
 			prPrRelation = new PrPrRelation();
 			prPrRelation.setPartyRoleId1(partyRoleUser.getPartyRoleId());
