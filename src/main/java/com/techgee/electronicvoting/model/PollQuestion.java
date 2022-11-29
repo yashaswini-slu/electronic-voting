@@ -1,5 +1,6 @@
 package com.techgee.electronicvoting.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
@@ -51,6 +52,23 @@ public class PollQuestion {
 		return "PollQuestion [pollQuestionId=" + pollQuestionId + ", pollQuestion=" + pollQuestion
 				+ ", pollQuestionUuid=" + pollQuestionUuid + ", pollId=" + pollId + "]";
 	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(pollId, pollQuestion);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PollQuestion other = (PollQuestion) obj;
+		return Objects.equals(pollId, other.pollId) && Objects.equals(pollQuestion, other.pollQuestion);
+	}
+	
+	
 	
 	
 
