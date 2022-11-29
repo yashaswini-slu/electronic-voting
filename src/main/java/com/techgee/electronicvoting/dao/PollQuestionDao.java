@@ -103,9 +103,15 @@ public class PollQuestionDao implements GenericDao<PollQuestion, Parameters, Str
 	}
 
 	@Override
-	public Optional<PollQuestion> updateV1(PollQuestion transientObject, Parameters parameters) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+	public Optional<PollQuestion> updateV1(PollQuestion pollQuestion, Parameters parameters) {
+		jdbcTemplate.update(environment.getProperty("PollQuestion.update"),
+				pollQuestion.getPollQuestion(),
+				parameters.getId());
+		try {
+			return getV1(new Parameters(parameters.getId()));
+		} catch (Exception e) {
+			throw new VotingException( e.getMessage());
+		}
 	}
 
 	@Override
