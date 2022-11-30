@@ -98,6 +98,14 @@ public class PollQuestionService {
 	}
 	
 	/*
+	 * @param parameter - id: pollId
+	 * */
+	public PollQuestionOptionResource getQuestions(Parameters parameters) {
+		PollQuestion pollQuestion = pollQuestionDao.getV1(parameters).orElseThrow(() -> new VotingException("Poll Question does not exist"));
+		return setResource(pollQuestion, parameters);
+	}
+	
+	/*
 	 * @param parameter - id: optionId
 	 * */
 	private boolean deleteOption(Parameters parameters) {
