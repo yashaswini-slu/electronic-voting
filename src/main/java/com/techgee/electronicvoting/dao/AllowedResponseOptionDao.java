@@ -30,12 +30,14 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 	Environment environment;
 	
 	public static final String BY_POLL_QUESTION_ID = "PollQuestionId";
-	
+	public static final String BY_POLL_QUESTION_ID_AND_IS_CORRECT = "PollQuestionIdAndIsCorrect";
+
 
 	@Override
 	public Optional<AllowedResponseOption> createV1(AllowedResponseOption allowedResponseOption,
 			Parameters parameters) {
 		return getV1(new Parameters(insert(allowedResponseOption, parameters)));
+		
 	}
 
 	@Override
@@ -82,12 +84,11 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 		
 	}
 
-
 	@Override
 	public Optional<AllowedResponseOption> getV1(Parameters parameters) {
 		try {
 			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("AllowedResponseOption.get"), allowedResponseOptionRowMapper,
-				parameters.getId()));  //option id
+				parameters.getId()));  //pollQuestionId
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (IncorrectResultSizeDataAccessException e) {
@@ -99,8 +100,18 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 
 	@Override
 	public Optional<AllowedResponseOption> getV1(Parameters parameters, String whereClause) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		Object parameter [] = switch(whereClause) {
+		case BY_POLL_QUESTION_ID_AND_IS_CORRECT -> new Object [] {
+				parameters.getId() //login Id
+		};
+		default -> throw new VotingException("The requested method is not implemented");
+		};
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(environment.getProperty("AllowedResponseOption.getBy" + whereClause), 
+					allowedResponseOptionRowMapper, parameter));
+		} catch (Exception e) {
+			throw new VotingException(e.getMessage());
+		}
 	}
 
 	@Override
@@ -141,7 +152,7 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 	public int delete(AllowedResponseOption allowedResponseOption) {
 		return jdbcTemplate.update(environment.getProperty("AllowedResponseOption.delete"), allowedResponseOption.getAllowedResponseOptionId());
 	}
-	
+
 	@Override
 	public int delete(Parameters parameters, String whereClause) {
 		// TODO Auto-generated method stub
@@ -162,6 +173,5 @@ public class AllowedResponseOptionDao implements GenericDao<AllowedResponseOptio
 		return allowedResponseOption;
 		
 	};
-	
 
 }
