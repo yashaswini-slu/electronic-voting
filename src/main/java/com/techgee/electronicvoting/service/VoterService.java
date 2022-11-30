@@ -108,7 +108,7 @@ public class VoterService {
 				foreignKey(partyRoleVoter.getPartyRoleId()).parentParameters(new Parameters
 						(PrPrRelation.USER_VOTER, parameters.getForeignKey())).build(), PrPrRelationDao.BY_ROLES_AND_ROLE_CD_POLL_ID_ENDDATE_NULL).orElseThrow(() -> new VotingException("User does not has permission to cast vote"));
 		if(parameters.getForeignKey() != prPrRelation.getPollId()) {
-			throw new VotingException("");
+			throw new VotingException("No permission to cast vote");
 		}
 		return setAndCreateVoteResponse(pollQuestionOptionResources, new Parameters(prPrRelation.getPrPrRelationId()));
 	}
