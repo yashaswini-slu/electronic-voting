@@ -28,6 +28,11 @@ public class PollQuestionController {
 		return pollQuestionService.create(pollQuestionOptionResource, Parameters.builder().id(pollId).build());
 	}
 	
+	@GetMapping(value="get/{pollQuestionId}")
+	public PollQuestionOptionResource get(@PathVariable(value="pollQuestionId") Long pollId) {
+		return pollQuestionService.getQuestions(Parameters.builder().id(pollId).build());
+	}
+	
 	@GetMapping(value="list/{pollId}")
 	public List<PollQuestionOptionResource> list(@PathVariable(value="pollId") Long pollId) {
 		return pollQuestionService.listQuestions(Parameters.builder().id(pollId).build());
