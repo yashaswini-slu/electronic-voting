@@ -42,5 +42,10 @@ public class VoterController {
 	public boolean castVote(@PathVariable(value="loginId") Long loginId, @PathVariable(value="pollId") Long pollId ,@RequestBody List<PollQuestionOptionResource> pollQuestionOptionResources) {
 		return voterService.castVote(pollQuestionOptionResources, Parameters.builder().id(loginId).foreignKey(pollId).build());
 	}
+	
+	@PostMapping(value="vote-result/{loginId}")
+	public void pollResult(@PathVariable(value="loginId") Long loginId) {
+		voterService.pollResult(Parameters.builder().id(loginId).build());
+	}
 
 }

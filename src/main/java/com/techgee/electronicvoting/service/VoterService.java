@@ -3,24 +3,30 @@ package com.techgee.electronicvoting.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.techgee.electronicvoting.dao.AllowedResponseOptionDao;
 import com.techgee.electronicvoting.dao.LoginDao;
 import com.techgee.electronicvoting.dao.PartyNameDao;
 import com.techgee.electronicvoting.dao.PartyRoleDao;
 import com.techgee.electronicvoting.dao.PollDao;
+import com.techgee.electronicvoting.dao.PollQuestionDao;
 import com.techgee.electronicvoting.dao.PrPrRelationDao;
 import com.techgee.electronicvoting.dao.VoterResponseDao;
 import com.techgee.electronicvoting.exception.VotingException;
+import com.techgee.electronicvoting.model.AllowedResponseOption;
 import com.techgee.electronicvoting.model.Login;
 import com.techgee.electronicvoting.model.PartyName;
 import com.techgee.electronicvoting.model.PartyRole;
 import com.techgee.electronicvoting.model.Poll;
+import com.techgee.electronicvoting.model.PollQuestion;
 import com.techgee.electronicvoting.model.PrPrRelation;
 import com.techgee.electronicvoting.model.VoterResponse;
 import com.techgee.electronicvoting.resource.PollQuestionOptionResource;
@@ -48,6 +54,16 @@ public class VoterService {
 	
 	@Autowired
 	VoterResponseDao voterResponseDao;
+	
+	@Autowired
+	PollService pollService;
+	
+	@Autowired
+	PollQuestionDao pollQuestionDao;
+	
+	@Autowired
+	AllowedResponseOptionDao allowedResponseOptionDao;
+
 	
 	/*
 	 * @param parameter - id: loginId
@@ -113,6 +129,41 @@ public class VoterService {
 		return setAndCreateVoteResponse(pollQuestionOptionResources, new Parameters(prPrRelation.getPrPrRelationId()));
 	}
 	
+	/*
+	 * @param
+	 * parameter id - login id
+	 * **/
+	public void pollResult(Parameters parameters) {
+		//List all the poll of login user
+		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
+		List<PollResource> polls = pollService.list(parameters);
+		polls = polls.stream().filter(p -> p.getEndDate().isBefore(LocalDate.now())).collect(Collectors.toList());
+		Map<Long, Map<Long,Long>> pollAllResponse = new HashMap<>();
+		Set<Long> pollIds = polls.stream().map(PollResource::getPollId).collect(Collectors.toSet());
+		for(PollResource poll: polls) {
+			pollAllResponse.put(poll.getPollId(), getCorrectOptions(poll));
+		}
+		getVoterResponse(pollIds);
+	}
+	
+	private void getVoterResponse(Set<Long> pollIds) {
+		List<PrPrRelation> voterRelations = prPrRelationDao.listIn(new Parameters(PrPrRelation.USER_VOTER), pollIds, PrPrRelationDao.BY_POLLID_AND_ROLE_CD);
+		Set<Long> voterRelationId = voterRelations.stream().map(PrPrRelation::getPrPrRelationId).collect(Collectors.toSet());
+		List<VoterResponse> voterResponse = voterResponseDao.listIn(null, voterRelationId, VoterResponseDao.BY_VOTE_RESPONSEID);
+		Set<Long> optionId = voterResponse.stream().map(VoterResponse::getAllowedResponseOptionId).collect(Collectors.toSet()); 
+	}
+
+	private Map<Long, Long> getCorrectOptions(PollResource poll) {
+		Map<Long, Long> questionsCorrectOption = new HashMap<>();
+		//Map<questionId, correctOptionId>
+		List<PollQuestion> questions = pollQuestionDao.list(new Parameters(poll.getPollId()), PollQuestionDao.BY_POLL_ID);
+		for(PollQuestion question : questions) {
+			AllowedResponseOption option = allowedResponseOptionDao.get(new Parameters(question.getPollId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID_AND_IS_CORRECT);
+			questionsCorrectOption.put(question.getPollId(), option.getAllowedResponseOptionId());
+		}
+		return questionsCorrectOption;
+	}
+
 	/*
 	 * @param parameter - id: prPrRelationId
 	 * */
