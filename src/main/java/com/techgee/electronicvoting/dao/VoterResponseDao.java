@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,6 +32,8 @@ public class VoterResponseDao implements GenericDao<VoterResponse, Parameters, S
 	
 	@Autowired
 	Environment environment;
+	
+	public static final String BY_VOTE_RESPONSEID = "VoterResponseId";
 	
 
 	@Override
@@ -131,6 +134,19 @@ public class VoterResponseDao implements GenericDao<VoterResponse, Parameters, S
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public List<VoterResponse> listIn(Parameters parameters, Set<Long> inValues, String whereClause) {
+		try {
+			if(whereClause.equals(BY_VOTE_RESPONSEID)) {
+				String query = setInvalues(environment.getProperty("VoterResponse.listIn" + whereClause), "%IDS%", inValues);
+				return jdbcTemplate.query(query, voterResponseRowMapper);
+			}
+			throw new VotingException( "whereClause method not implemented for voterresponse");
+		} catch (EmptyResultDataAccessException e) {
+			throw new VotingException(e.getMessage());
+		}
+	}
+
 	
 RowMapper<VoterResponse> voterResponseRowMapper = (rs, rowNum) -> {
 		

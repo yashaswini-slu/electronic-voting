@@ -3,8 +3,7 @@ package com.techgee.electronicvoting.dao;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -35,10 +34,12 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 	public static final String BY_ROLES_AND_ROLE_CD_ENDDATE_NULL = "RolesAndRoleCdAndEndDateNull";
 	
 	public static final String BY_ROLES_AND_ROLE_CD_POLL_ID_ENDDATE_NULL = "RolesAndRoleCdPollIdAndEndDateNull";
+	
+	public static final String BY_POLLID_AND_ROLE_CD = "PollId";
 
 
 	@Override
-	public Optional<PrPrRelation> createV1(@NotNull PrPrRelation prPrRelation, Parameters parameters) {
+	public Optional<PrPrRelation> createV1(PrPrRelation prPrRelation, Parameters parameters) {
 			return getV1(new Parameters(insert(prPrRelation, parameters)));
 	}
 
@@ -199,6 +200,20 @@ public class PrPrRelationDao implements GenericDao<PrPrRelation, Parameters, Str
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+public List<PrPrRelation> listIn(Parameters parameters, Set<Long> inValues, String whereClause) {
+		
+		try {
+			if(whereClause.equals(BY_POLLID_AND_ROLE_CD)) {
+				String query = setInvalues(environment.getProperty("PrPrRelation.listIn" + whereClause), "%IDS%", inValues);
+				return jdbcTemplate.query(query, prPrRelationRowMapper, parameters.getId());
+			}
+			throw new VotingException( "whereClause method not implemented for partyName");
+		} catch (EmptyResultDataAccessException e) {
+			throw new VotingException(e.getMessage());
+		}
+	}
+
 	
 RowMapper<PrPrRelation> prPrRelationRowMapper = (rs, rowNum) -> {
 		
