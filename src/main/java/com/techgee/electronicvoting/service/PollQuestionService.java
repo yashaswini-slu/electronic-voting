@@ -33,6 +33,7 @@ public class PollQuestionService {
 
 	/*
 	 * @param parameter - id: pollId
+	 * service to create a poll question
 	 * */
 	@Transactional
 	public PollQuestionOptionResource create( PollQuestionOptionResource pollQuestionOptionResource,
@@ -51,6 +52,7 @@ public class PollQuestionService {
 	
 	/*
 	 * @param parameter - id: pollId
+	 * fetch the list using pollId
 	 * */
 	public List<PollQuestionOptionResource> listQuestions(Parameters parameters) {
 		Poll poll = pollDao.getV1(parameters).orElse(null);
@@ -68,6 +70,7 @@ public class PollQuestionService {
 	
 	/*
 	 * @param parameter - id: pollQuestionId
+	 * fetch the question, and update it
 	 * */
 	@Transactional
 	public PollQuestionOptionResource updateQuestion( PollQuestionOptionResource pollQuestionOptionResource, Parameters parameters) {
@@ -76,6 +79,7 @@ public class PollQuestionService {
 		pollQuestion.setPollId(pollQuestionOptionResource.getPollId());
 		pollQuestion.setPollQuestion(pollQuestionOptionResource.getQuestion());
 		pollQuestion.setPollQuestionId(pollQuestionOptionResource.getPollQuestionId());
+		//check if modified and update
 		if(!pollQuestionDb.equals(pollQuestion)) {
 			pollQuestion.setPollQuestionUuid(pollQuestionDb.getPollQuestionUuid());
 			pollQuestionDao.update(pollQuestion, parameters);
@@ -145,6 +149,7 @@ public class PollQuestionService {
 	
 	/*
 	 * @param parameter - id: pollQuestionId
+	 * set the pollQuestionId, invoke insertBatch
 	 * */
 	private void createOptions( PollQuestionOptionResource pollQuestionOptionResource, Parameters parameters) {
 		List<AllowedResponseOption> options = pollQuestionOptionResource.getOptions();
@@ -152,6 +157,9 @@ public class PollQuestionService {
 		allowedResponseOptionDao.insertBatch(options);
 	}
 
+	/*
+	 * set the resource and invoke create dao
+	 * */
 	private Long createQuestion(PollQuestionOptionResource pollQuestionOptionResource) {
 		PollQuestion pollQuestion = new PollQuestion();
 		pollQuestion.setPollQuestion(pollQuestionOptionResource.getQuestion());
@@ -163,6 +171,7 @@ public class PollQuestionService {
 	
 	/*
 	 * @param parameter - id: pollQuestionId
+	 * fetch the pollQuestion and set the resource for list
 	 * */
 	private PollQuestionOptionResource setPollQuestionResource(Parameters parameters) {
 		PollQuestion pollQuestion = pollQuestionDao.get(new Parameters(parameters.getForeignKey()));
@@ -171,6 +180,7 @@ public class PollQuestionService {
 	
 	/*
 	 * @param parameter - id: pollQuestionId
+	 * set the resource with the values
 	 * */
 	private PollQuestionOptionResource setResource(PollQuestion pollQuestion, Parameters parameters) {
 		PollQuestionOptionResource resource = new PollQuestionOptionResource();
