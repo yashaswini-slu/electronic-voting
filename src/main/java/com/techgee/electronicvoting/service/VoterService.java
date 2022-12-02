@@ -137,7 +137,7 @@ public class VoterService {
 		//List all the poll of login user
 		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
 		List<PollResource> polls = pollService.list(parameters);
-		polls = polls.stream().filter(p -> p.getEndDate().isBefore(LocalDate.now())).collect(Collectors.toList());
+//		polls = polls.stream().filter(p -> p.getEndDate().isBefore(LocalDate.now())).collect(Collectors.toList());
 		Map<Long, Map<Long,Long>> pollAllResponse = new HashMap<>();
 		Set<Long> pollIds = polls.stream().map(PollResource::getPollId).collect(Collectors.toSet());
 		for(PollResource poll: polls) {
