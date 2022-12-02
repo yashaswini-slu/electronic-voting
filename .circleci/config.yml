@@ -5,20 +5,25 @@ jobs:
       - image: cimg/openjdk:18.0.2
 
     steps:
+      # checking out source code from git
       - checkout
 
+      # creating a remote environment for docker to run Dockerfile
       - setup_remote_docker:
           version: 20.10.14
           docker_layer_caching: true
 
+      # installing dependencies from pom.xl and building code that produces jar file as a package
       - run:
          name: Installing dependencies and compiling the source code
          command: mvn clean install -DskipTests
-
+ 
+      # running test cases. commented as connection to db is not established through circleCI
 #     - run:
 #        name: run maven test cases
 #        command: mvn test
 
+      # building dockerfile
       - run:
          name: docker build
          command: docker build -t electronic-voting-api .
@@ -27,7 +32,7 @@ jobs:
          path: /home/circleci/project/target/electronic-voting-0.0.1-SNAPSHOT.jar
          destination: electronic-voting-0.0.1-SNAPSHOT.jar
 
-
+# restricting pipeline execution only to master branch
 workflows:
   sample:
     jobs:
@@ -36,4 +41,3 @@ workflows:
             branches:
               only:
                 - master
-                - TEC-45
