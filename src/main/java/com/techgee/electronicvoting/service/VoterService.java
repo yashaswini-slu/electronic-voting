@@ -151,11 +151,12 @@ public class VoterService {
 	
 
 	private Map<String, Double> getPollResult(Map<Long, Double> result, List<PollResource> polls) {
-		Map<Long, Double> pollResult = new HashMap<>();
+		Map<String, Double> pollResult = new HashMap<>();
 		for(Map.Entry<Long, Double> res: result.entrySet()) {
-			polls.stream().filter(p->p.getPollId().equals(res.getKey()));
+			String title = polls.stream().filter(p->p.getPollId().equals(res.getKey())).map(PollResource::getTitle).collect(Collectors.joining());
+			pollResult.put(title, res.getValue());
 		}
-		return null;
+		return pollResult;
 	}
 
 	private Map<Long, Long> getVotersCount(Set<Long> pollIds) {
