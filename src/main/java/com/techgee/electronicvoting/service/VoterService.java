@@ -133,7 +133,7 @@ public class VoterService {
 	 * @param
 	 * parameter id - login id
 	 * **/
-	public void pollResult(Parameters parameters) {
+	public Map<String, Double> pollResult(Parameters parameters) {
 		//List all the poll of login user
 		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
 		List<PollResource> polls = pollService.list(parameters);
@@ -143,14 +143,57 @@ public class VoterService {
 		for(PollResource poll: polls) {
 			pollAllResponse.put(poll.getPollId(), getCorrectOptions(poll));
 		}
-		getVoterResponse(pollIds);
+		Map<Long, Long> optionIdCount = getVoterResponse(pollIds);
+		Map<Long, Long> votersCount = getVotersCount(pollIds);
+		Map<Long, Double> result = getResult(pollAllResponse, optionIdCount, votersCount);
+		return getPollResult(result, polls);
 	}
 	
-	private void getVoterResponse(Set<Long> pollIds) {
+
+	private Map<String, Double> getPollResult(Map<Long, Double> result, List<PollResource> polls) {
+		Map<Long, Double> pollResult = new HashMap<>();
+		for(Map.Entry<Long, Double> res: result.entrySet()) {
+			polls.stream().filter(p->p.getPollId().equals(res.getKey()));
+		}
+		return null;
+	}
+
+	private Map<Long, Long> getVotersCount(Set<Long> pollIds) {
+		Map<Long, Long> voterCount = new HashMap<>();
+		List<PrPrRelation> voterRelations = prPrRelationDao.listIn(new Parameters(PrPrRelation.USER_VOTER), pollIds, PrPrRelationDao.BY_POLLID_AND_ROLE_CD);
+		for(Long pollId : pollIds) {
+			voterCount.put(pollId, voterRelations.stream().filter(p -> p.getPollId().equals(pollId)).count());
+		}
+		return voterCount;
+	}
+
+	private Map<Long, Double> getResult(Map<Long, Map<Long, Long>> pollAllResponse, Map<Long, Long> optionIdCount, Map<Long, Long> votersCount) {
+		Map<Long, Double> pollResult = new HashMap<>();
+		for (Map.Entry<Long, Map<Long, Long>> response : pollAllResponse.entrySet()) {
+			Map<Long, Long> questions = response.getValue();
+			Long result = 0L;
+			for(Map.Entry<Long, Long> question: questions.entrySet()) {
+				Long option = optionIdCount.get(question.getValue());
+				if(option != null) {
+					result = result + option;
+				}
+			}			
+			double percent = (result.doubleValue()/(votersCount.get(response.getKey())).doubleValue())*100;
+			pollResult.put(response.getKey(), percent);
+		}
+		return pollResult;
+	}
+
+	private Map<Long, Long> getVoterResponse(Set<Long> pollIds) {
 		List<PrPrRelation> voterRelations = prPrRelationDao.listIn(new Parameters(PrPrRelation.USER_VOTER), pollIds, PrPrRelationDao.BY_POLLID_AND_ROLE_CD);
 		Set<Long> voterRelationId = voterRelations.stream().map(PrPrRelation::getPrPrRelationId).collect(Collectors.toSet());
 		List<VoterResponse> voterResponse = voterResponseDao.listIn(null, voterRelationId, VoterResponseDao.BY_VOTE_RESPONSEID);
 		Set<Long> optionId = voterResponse.stream().map(VoterResponse::getAllowedResponseOptionId).collect(Collectors.toSet()); 
+		Map<Long, Long> optionIdCount = new HashMap<>();
+		for(Long id: optionId) {
+			optionIdCount.put(id, voterResponse.stream().filter(p-> p.getAllowedResponseOptionId().equals(id)).count());
+		}
+		return optionIdCount;
 	}
 
 	private Map<Long, Long> getCorrectOptions(PollResource poll) {
@@ -158,8 +201,8 @@ public class VoterService {
 		//Map<questionId, correctOptionId>
 		List<PollQuestion> questions = pollQuestionDao.list(new Parameters(poll.getPollId()), PollQuestionDao.BY_POLL_ID);
 		for(PollQuestion question : questions) {
-			AllowedResponseOption option = allowedResponseOptionDao.get(new Parameters(question.getPollId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID_AND_IS_CORRECT);
-			questionsCorrectOption.put(question.getPollId(), option.getAllowedResponseOptionId());
+			AllowedResponseOption option = allowedResponseOptionDao.get(new Parameters(question.getPollQuestionId()), AllowedResponseOptionDao.BY_POLL_QUESTION_ID_AND_IS_CORRECT);
+			questionsCorrectOption.put(question.getPollQuestionId(), option.getAllowedResponseOptionId());
 		}
 		return questionsCorrectOption;
 	}
