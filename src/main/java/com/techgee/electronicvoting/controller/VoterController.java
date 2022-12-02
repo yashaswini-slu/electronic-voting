@@ -1,6 +1,7 @@
 package com.techgee.electronicvoting.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +42,11 @@ public class VoterController {
 	@PostMapping(value="cast-vote/{loginId}/{pollId}")
 	public boolean castVote(@PathVariable(value="loginId") Long loginId, @PathVariable(value="pollId") Long pollId ,@RequestBody List<PollQuestionOptionResource> pollQuestionOptionResources) {
 		return voterService.castVote(pollQuestionOptionResources, Parameters.builder().id(loginId).foreignKey(pollId).build());
+	}
+	
+	@PostMapping(value="vote-result/{loginId}")
+	public Map<String, Double> pollResult(@PathVariable(value="loginId") Long loginId) {
+		return voterService.pollResult(Parameters.builder().id(loginId).build());
 	}
 
 }
