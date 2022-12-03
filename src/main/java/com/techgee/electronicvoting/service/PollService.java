@@ -40,6 +40,11 @@ public class PollService {
 	@Autowired
 	PartyNameDao partyNameDao;
 	
+	/*
+	 * @param parameter - id: loginId
+	 * service to create a poll
+	 * */
+	
 	@Transactional
 	public PollResource create(PollResource pollResource, Parameters parameter) {
 		Login login = loginDao.getV1(parameter).orElseThrow(() -> new VotingException("Login User does not exist"));
@@ -48,12 +53,19 @@ public class PollService {
 		return createPoll(pollResource, new Parameters(prPrRelationId, login.getPartyId()));
 	}
 
-	
+	/*
+	 * @param parameter - id: pollId
+	 * service to get a poll details
+	 * */
 	public PollResource get(Parameters parameters) {
 		Poll poll = pollDao.get(parameters);
 		return setPollResource(poll, Parameters.builder().foreignKey(getPartyUid(new Parameters(poll.getPprId()))).build());
 	}
-
+	/*
+	 * @param parameter - id: loginId
+	 * service to list all the polls for login_user who is organiser
+	 * */
+	
 	public List<PollResource> list(Parameters parameters) {
 		Login login = loginDao.getV1(parameters).orElseThrow(() -> new VotingException("Login User does not exist"));
 		Long prPrRelationId = getRelationId(login.getPartyId());
@@ -64,11 +76,17 @@ public class PollService {
 		return pollResources;
 	}
 	
+	/*
+	 * @param parameter - id: pollId
+	 * service to update a poll
+	 * */
+	
 	@Transactional
 	public PollResource update(PollResource pollResource, Parameters parameters) {
 		Poll poll = pollDao.get(parameters);
 		Poll newPoll = new Poll();
 		setCommonPollData(newPoll, pollResource);
+		//Check if there is changes
 		if(poll.equals(newPoll) ) {
 			throw new VotingException("Poll not Modified"); 
 		}
@@ -76,6 +94,11 @@ public class PollService {
 		parameters.setWord("Update");
 		return setPollResource(newPoll, parameters);
 	}
+	
+	/*
+	 * @param parameter - id: pollId
+	 * service to delete a poll
+	 * */
 	
 	@Transactional
 	public boolean delete(Parameters parameters) {
@@ -89,6 +112,9 @@ public class PollService {
 		return roleOrganiser.getPartyId();
 	}
 
+	/*
+	 * set resource for poll Id
+	 */
 	private void setPollResources(List<PollResource> pollResources, List<Poll> polls, Parameters parameters) {
 		for(Poll poll : polls) {
 			PollResource pollResource = new PollResource();
@@ -120,6 +146,9 @@ public class PollService {
 	}
 
 
+	/**
+	 * Set the details to pollResource
+	 * */
 	private PollResource setPollResource(Poll poll, Parameters parameters) {
 		PollResource pollResource = new PollResource();
 		pollResource.setTitle(poll.getTitle());
@@ -171,6 +200,9 @@ public class PollService {
 		return partyRoleDao.create(partyRole, null);
 	}
 
+	/**
+	 * validate resource, validating start date and end date
+	 * */
 	private void validateResource(PollResource pollResource) {
 		if(pollResource.getEndDate().isBefore(pollResource.getStartDate()) || pollResource.getEndDate().equals(pollResource.getStartDate())) {
 			throw new VotingException("End date should be after Start date");
