@@ -1,0 +1,28 @@
+<div
+  style="text-align: center; font-weight: bold; font-size: 30px; padding: 20px"
+>
+  <div class="tbl-content">
+    <table>
+      <thead class="tbl-header">
+        <tr>
+          <th>Title</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of viewPollMock">
+          <td>{{ item.title }}</td>
+          <td>{{ item.startDate }}</td>
+          <td>{{ item.endDate }}</td>
+          <td>
+            <button class="fas fa-vote-yea" (click)="vote(item.pollId)">
+              <em tyle="font-size:24px">Cast Vote</em></button
+            >&nbsp;&nbsp;
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

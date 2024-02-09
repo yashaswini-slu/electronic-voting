@@ -1,0 +1,80 @@
+<div
+  style="text-align: center; font-weight: bold; font-size: 30px; padding: 20px"
+>
+  <h1>List of Poll Questions</h1>
+  <div > 
+    <button class="btn btn-link" (click)="addQuestions()" style="color: rgb(25 136 235); float: right;">
+      <strong style="font-size: 16px">Add Question</strong>
+    </button>
+    <div>
+      <button class="btn btn-default add-voter btn-link" id="add-voter"
+          (click)="getVoters()">
+          Add Voter
+      </button>
+      <ng-template [ngIf]="voters.length > 0">
+      <select id="search-ibbi-assetclass" class="form-control" [(ngModel)]="partyId" 
+        (ngModelChange)="addVoter($event)" style="width: 20%; float:right">
+          <option *ngFor="let voter of voters" [ngValue]="voter.partyId">
+              {{voter.firstName}}
+          </option>
+      </select>
+    </ng-template>
+  </div>
+  
+  </div>
+  <div class="tbl-content">
+    <table>
+      <thead class="tbl-header">
+        <tr>
+          <th>#</th>
+          <th>Question</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let question of questions; let i = index">
+          <td>{{i+1}}</td>
+          <td>{{ question.question }}</td>
+          <td>
+            <button
+              class="btn btn-link"
+              style="color: rgb(44, 115, 237)"
+              (click)="update(question.pollQuestionId)"
+            >
+              <em style="font-size: 20px" class="fa">&#xf040;</em></button
+            >&nbsp;&nbsp;
+            <button
+              class="btn btn-link"
+              style="color: RED"
+              (click)="delete(question.pollQuestionId)"
+            >
+              <em style="font-size: 20px" class="fa">&#xf014;</em>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <br/>
+  <div class="form-group">
+    <div
+      class="alert alert-danger"
+      role="alert"
+      *ngIf="isAddVoterFailed"
+      style="font-size: large"
+    >
+      {{ errorMessage }}
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div
+      class="alert alert-success"
+      role="alert"
+      *ngIf="isAddVoterSuccess"
+      style="font-size: large"
+    >
+      {{ successMessage }}
+    </div>
+  </div>
+</div>

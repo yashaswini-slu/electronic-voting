@@ -1,0 +1,47 @@
+<div style="text-align: center;font-weight: bold;font-size: 30px; padding: 20px;">Poll Question Form</div>
+<div class="design">
+      <form [formGroup]="modifyQuestionForm" class="ballotForm">
+        <label for="username" class="col-sm-2 col-form-label label_text">Question</label>
+        <textarea
+        name="question" formControlName="question"
+          rows="5"
+          cols="50"
+        ></textarea>
+        <br/>
+        <div formArrayName="options" class="col-sm-6 col-form-label" style="padding-left: 60px;">
+          Options
+          <ng-template ngFor let-opt [ngForOf]="modifyQuestionForm['controls'].options['controls']" let-index="index">
+            <div [formGroupName]="index" >
+              <input type="text" class="form-control" formControlName="option" name="option"  placeholder={{index+1}}/>
+              <div style="padding-top: 10px; padding-left: 15px;">
+                Select "Yes" if correct.
+                <input type="radio" formControlName="correct" [value]=true id="compliance-yes"> Yes &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="radio" formControlName="correct" [value]=false id="compliance-no"> No
+              </div>                 
+            </div>
+            <br/>
+          </ng-template>
+        </div>
+        <div class="ballotComponentButton">
+          <div class="form-group">
+            <button class="btn btn-secondary btn-block ballotButton" (click)="onClear()">
+              Cancel
+            </button>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-primary btn-block ballotButton" (click)="onSubmit()">
+              Add
+            </button>
+          </div>
+        </div>
+  </form>
+  <div class="form-group">
+    <div
+      class="alert alert-danger"
+      role="alert"
+      *ngIf="isPollQuestionUpdateFailed"
+    >
+      Poll Question creation failed: {{ errorMessage }}
+    </div>
+  </div>
+</div>

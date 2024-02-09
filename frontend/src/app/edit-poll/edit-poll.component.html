@@ -1,0 +1,48 @@
+<div style="text-align: center;font-weight: bold;font-size: 30px; padding: 20px;">Edit Poll Form</div>
+<div class="design">
+  <form [formGroup]="updateBalletform"
+        class="ballotForm"
+        name="form"
+        (ngSubmit)="onSubmit()">
+    <div>
+      <label for="title" class="col-sm-2 col-form-label label_text">Title</label>
+      <input class="col-sm-9" type="text" name="title" formControlName="title" />
+    </div>
+    <br>
+    <div>
+      <label for="description" class="col-sm-2 col-form-label label_text">Description</label>
+      <textarea class="col-sm-9" name="description" formControlName="description"></textarea>
+    </div>
+    <div>
+      <label for="startDate" class="col-sm-2 col-form-label label_text">Start Date</label>
+      <input class="col-sm-9" type="date" name="startDate" formControlName="startDate" />
+    </div>
+    <div>
+      <label for="endDate" class="col-sm-2 col-form-label label_text">End Date</label>
+      <input class="col-sm-9" type="date" name="endDate" formControlName="endDate" />
+    </div>
+
+    <div class="ballotComponentButton">
+      <div class="form-group">
+        <button class="btn btn-secondary btn-block ballotButton" (click)="onClear($event)">
+          Cancel
+        </button>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-block ballotButton" (click)="onSubmit()">
+          Update
+        </button>
+      </div>
+    </div>
+    <div class="form-group">
+      <div
+        class="alert alert-danger"
+        role="alert"
+        *ngIf="isPollUpdateFailed"
+      >
+        Poll updation failed: {{ errorMessage }}
+      </div>
+    </div>
+  </form>
+</div>
+

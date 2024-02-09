@@ -1,0 +1,15 @@
+.title {
+    text-align: center;
+    font-size: xx-large;
+    margin-top: -55px;
+    color: black;
+}
+
+.container {
+  background-image: url("../../assets/home.jpg");
+  background-color: #cccccc;
+  background-size: auto;
+  background-position:center;
+  width: 100vw;
+  height: 100vh;
+}

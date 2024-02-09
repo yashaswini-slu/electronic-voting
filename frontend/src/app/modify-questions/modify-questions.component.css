@@ -1,0 +1,22 @@
+.ballotComponentButton {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px
+  }
+
+  .design {
+    border: 1px solid;
+    /* padding-right: 30px; */
+    border-radius: 10px;
+    background-color: #edefd9;
+  }
+
+  .ballotForm {
+    padding-top: 50px;
+  }
+
+  .label_text {
+    text-align: center !important;
+  }

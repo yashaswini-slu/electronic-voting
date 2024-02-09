@@ -1,0 +1,47 @@
+<div
+  style="text-align: center; font-weight: bold; font-size: 30px; padding: 20px"
+>
+  <h1>List of polls</h1>
+  <div class="tbl-content">
+    <table>
+      <thead class="tbl-header">
+        <tr>
+          <th>Title</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of viewPollMock">
+          <td>{{ item.title }}</td>
+          <td>{{ item.startDate }}</td>
+          <td>{{ item.endDate }}</td>
+          <td>
+            <button
+              class="btn btn-link"
+              style="color: rgb(44, 115, 237)"
+              (click)="update(item.pollId)"
+            >
+              <em style="font-size: 20px" class="fa">&#xf040;</em></button
+            >&nbsp;&nbsp;
+            <button
+              class="btn btn-link"
+              style="color: RED"
+              (click)="delete(item.pollId)"
+            >
+              <em style="font-size: 20px" class="fa">&#xf014;</em>
+            </button>
+            <button
+              class="btn btn-link"
+              style="color: black"
+              (click)="addQuestionare(item.pollId)"
+            >
+              <em style="font-size: 16px; color: #0e28c3;" >Add Questions</em>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
